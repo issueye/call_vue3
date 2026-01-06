@@ -68,7 +68,7 @@ const initWorkbench = async () => {
         return false;
     }
 
-    const deptId = userStore.room?.dept_id || userStore.org.dept_id;
+    const deptId = userStore.room?.dept_id || userStore.org?.dept_id;
     if (!deptId) {
         console.warn("科室ID不存在，跳过获取患者列表");
         return false;
@@ -210,56 +210,17 @@ const cleanup = () => {
     isInitialized.value = false;
 };
 
-// 统一的初始化函数
-const doInit = async () => {
-    const orgId = userStore.org?.org_id;
-    const deptId = userStore.room?.dept_id || userStore.org?.dept_id;
-
-    if (!orgId || !deptId) {
-        console.warn("缺少机构或科室信息");
-        return;
-    }
-
-    console.log("初始化工作台...", { orgId, deptId });
-    isInitialized.value = true;
-
-    await Promise.all([initWorkbench(), initMqttConnection()]);
-};
-
-// 轮询检查初始化
-let pollTimer = null;
-const pollForInit = () => {
-    const orgId = userStore.org?.org_id;
-    const deptId = userStore.room?.dept_id || userStore.org?.dept_id;
-
-    if (orgId && deptId) {
-        doInit();
-        if (pollTimer) {
-            clearInterval(pollTimer);
-            pollTimer = null;
-        }
-    }
-};
-
 onMounted(() => {
     // 检测屏幕尺寸
     checkScreenSize();
     const unwatch = onScreenChange(checkScreenSize);
 
-    // 立即检查一次
-    pollForInit();
-
-    // 如果没初始化，启动轮询
-    if (!isInitialized.value) {
-        pollTimer = setInterval(pollForInit, 100);
-    }
+    // 初始化 MQTT 连接（患者列表已在登录时获取）
+    initMqttConnection();
 
     onUnmounted(() => {
         cleanup();
         unwatch();
-        if (pollTimer) {
-            clearInterval(pollTimer);
-        }
     });
 });
 </script>

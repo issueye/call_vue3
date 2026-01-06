@@ -25,7 +25,9 @@ service.interceptors.request.use(
 
     // 添加 Token
     if (userStore.limeToken) {
-      config.headers.Authorization = `Bearer ${userStore.limeToken}`;
+      // 避免重复添加 Bearer 前缀
+      const token = userStore.limeToken.replace(/^Bearer\s+/i, "");
+      config.headers.Authorization = token;
     }
 
     // 添加机构信息头
