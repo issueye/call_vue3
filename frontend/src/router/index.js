@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import CONSTANTS from '@/constants'
 
 const routes = [
   {
@@ -27,7 +28,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, _from, next) => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem(CONSTANTS.LIMETOKEN_KEY)
   if (!to.meta.public && !token) {
     next({ name: 'Login' })
   } else {

@@ -3,30 +3,30 @@ import { post, get, put, del } from "@/utils/request";
 
 // 获取客户端列表
 export const apiGetClientList = (data) => {
-  return post("/lime/api/client_manage/list", data);
+  return post("/lime/api/v1/s_admin/client_manage/list", data);
 };
 
 // 创建客户端
 export const apiCreateClient = (data) => {
-  return post("/lime/api/client_manage/create", data);
+  return post("/lime/api/v1/s_admin/client_manage/create", data);
 };
 
 // 更新客户端
 export const apiUpdateClient = (id, data) => {
-  return put(`/lime/api/client_manage/update/${id}`, data);
+  return put(`/lime/api/v1/s_admin/client_manage/update/${id}`, data);
 };
 
 // 更新关联信息
 export const apiUpdateLink = (data) => {
-  return put("/lime/api/client_manage/update/link", data);
+  return put("/lime/api/v1/s_admin/client_manage/update/link", data);
 };
 
 // 删除客户端
 export const apiDeleteClient = (id) => {
-  return del(`/lime/api/client_manage/delete/${id}`);
+  return del(`/lime/api/v1/s_admin/client_manage/delete/${id}`);
 };
 
 // 检查设备是否注册
 export const apiCheckDeviceReg = (id) => {
-  return get(`/lime/api/client_manage/check/${id}/1`);
+  return get(`/lime/api/v1/s_admin/client_manage/check/${id}/1`);
 };

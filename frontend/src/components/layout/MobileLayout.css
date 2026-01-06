@@ -1,39 +1,103 @@
-/* MobileLayout 样式 */
+/* MobileLayout 样式 - 参考旧版本优化 */
 .mobile-layout {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--header-height-sm));
-  background: var(--bg-color);
+  gap: 8px;
+  padding: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--bg-color);
 }
 
-.mobile-layout__list {
-  flex: 1;
+/* 区域样式 */
+.mobile-layout__section {
+  width: 100%;
+  background: var(--bg-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
+  border: 1px solid var(--border-light);
+  flex-shrink: 0;
 }
 
-.mobile-layout__detail {
+.mobile-layout__section--patient {
+  min-height: 220px;
+  animation: slideInDown 0.5s ease;
+}
+
+.mobile-layout__section--list {
   flex: 1;
+  min-height: 200px;
+  animation: slideInUp 0.6s ease;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
-.mobile-layout__back {
+/* 区域头部 */
+.section-header {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  justify-content: space-between;
   padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--bg-white);
   border-bottom: 1px solid var(--border-light);
+}
+
+.section-header__title {
   font-size: var(--font-size-md);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.section-header__count {
+  font-size: var(--font-size-sm);
   color: var(--color-primary);
-  cursor: pointer;
+  font-weight: 500;
+  background: rgba(22, 97, 171, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
 }
 
-.mobile-layout__back:active {
-  background: #f5f5f5;
+/* 动画效果 */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.mobile-layout__back-icon {
-  font-size: var(--font-size-lg);
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 420px) {
+  .mobile-layout {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .mobile-layout__section--patient {
+    min-height: 200px;
+  }
+
+  .section-header {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .section-header__title {
+    font-size: var(--font-size-sm);
+  }
 }

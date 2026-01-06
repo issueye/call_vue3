@@ -12,6 +12,12 @@ const service = axios.create({
   },
 });
 
+// 不抛错的接口路径（返回完整响应）
+const noThrowUrls = [
+  "/client_manage/check", // 设备检查接口 (s_admin 路径)
+  "/s_admin/client_manage/check", // 设备检查接口 (完整路径)
+];
+
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
@@ -26,7 +32,8 @@ service.interceptors.request.use(
     if (userStore.org) {
       config.headers.orgid = userStore.org.org_id;
       config.headers.orgcode = userStore.org.org_code;
-      config.headers.orgname = userStore.org.org_name;
+      // 注意：org_name 可能包含中文，ISO-8859-1 不支持， 先URL编码，然后进行base64编码
+      config.headers.orgname = btoa(encodeURIComponent(userStore.org.org_name));
     }
 
     return config;
@@ -40,6 +47,10 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const res = response.data;
+    const url = response.config.url || "";
+
+    // 检查是否是不抛错的接口
+    const isNoThrowUrl = noThrowUrls.some((u) => url.includes(u));
 
     // Blob 类型响应直接返回（用于文件下载）
     if (response.config.responseType === "blob") {
@@ -51,8 +62,13 @@ service.interceptors.response.use(
       return res.data !== undefined ? res.data : res;
     }
 
+    // 对于不抛错的接口，返回完整响应
+    if (isNoThrowUrl) {
+      return res;
+    }
+
     // 业务错误
-    return Promise.reject(new Error(res.message || "请求失败"));
+    return Promise.reject(new Error(res.message || res.error || "请求失败"));
   },
   (error) => {
     // HTTP 错误处理
@@ -74,6 +90,8 @@ service.interceptors.response.use(
     if (error.code === "ECONNABORTED") {
       return Promise.reject(new Error("请求超时"));
     }
+
+    console.log("error", error);
 
     return Promise.reject(new Error("网络连接失败"));
   },

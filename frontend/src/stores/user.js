@@ -1,81 +1,182 @@
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import { apiLogin, apiLogout } from '@/api'
-import CONSTANTS from '@/constants'
+import { defineStore } from "pinia";
+import { ref, computed, reactive } from "vue";
+import { apiLogin, apiLogout } from "@/api";
+import CONSTANTS from "@/constants";
 
-export const useUserStore = defineStore('user', () => {
-  // 状态
-  const limeToken = ref(localStorage.getItem(CONSTANTS.LIMETOKEN_KEY))
-  const clientID = ref(localStorage.getItem('client_id') || '')
-  const org = ref(JSON.parse(localStorage.getItem('org') || 'null'))
-  const room = ref(JSON.parse(localStorage.getItem('room') || 'null'))
-  const userInfo = ref(null)
+export const useUserStore = defineStore("user", () => {
+  // ========== 设备状态 ==========
+  const deviceError = ref(""); // 设备错误信息
+  const deviceRegistered = ref(false); // 设备是否已注册
 
-  // 计算属性
-  const isLoggedIn = computed(() => !!limeToken.value)
-  const hasOrgInfo = computed(() => !!org.value)
-  const hasRoomInfo = computed(() => !!room.value)
+  // ========== 用户状态 ==========
+  const limeToken = ref(localStorage.getItem(CONSTANTS.LIMETOKEN_KEY) || "");
+  const clientID = ref(localStorage.getItem("client_id") || "");
+  // 机构信息
+  const org = reactive({
+    org_id: 0,
+    org_code: "",
+    org_name: "",
+    dept_id: 0,
+  });
+  // 诊室信息
+  const room = reactive({
+    id: 0,
+    description: "",
+    name: "",
+    dept_id: 0,
+    room_type: 0,
+    location: "",
+    child_protection_room_type: 0,
+  });
+  // 用户信息
+  const userInfo = reactive({
+    id: 0,
+    account: "",
+    nick_name: "",
+  });
 
-  // 方法 - 登录
-  const login = async (form) => {
-    try {
-      const res = await apiLogin(form)
-      if (res) {
-        limeToken.value = res.token || res.data?.token
-        userInfo.value = res.user || res.data?.user
-        localStorage.setItem(CONSTANTS.LIMETOKEN_KEY, limeToken.value)
-        return { success: true }
-      }
-      return { success: false, message: '登录失败' }
-    } catch (error) {
-      console.error('登录失败:', error)
-      return { success: false, message: error.message || '登录失败' }
+  // ========== 计算属性 ==========
+  const isLoggedIn = computed(() => !!limeToken.value);
+  const hasOrgInfo = computed(() => !!org.org_id);
+  const hasRoomInfo = computed(() => !!room.id);
+  const hasDeviceError = computed(() => !!deviceError.value);
+
+  // ========== 设备相关方法 ==========
+  // 设置设备错误信息
+  const setDeviceError = (error) => {
+    deviceError.value = error || "";
+  };
+
+  // 清除设备错误信息
+  const clearDeviceError = () => {
+    deviceError.value = "";
+  };
+
+  // 设置设备注册状态
+  const setDeviceRegistered = (registered) => {
+    deviceRegistered.value = registered;
+  };
+
+  // 设置设备信息（机构+诊室）
+  const setDeviceInfo = (data) => {
+    console.log("device", data);
+    if (data?.org) {
+      org.org_id = data.org.org_id;
+      org.org_code = data.org.org_code;
+      org.org_name = data.org.org_name;
+      org.dept_id = data.org.dept_id || 0;
     }
-  }
+    if (data?.rooms && data.rooms.length > 0) {
+      const r = data.rooms[0];
+      // 兼容不同的字段命名：department_id 或 dept_id
+      room.id = r.id;
+      room.description = r.description || "";
+      room.name = r.name || "";
+      room.dept_id = r.department_id || r.dept_id || 0;
+      room.room_type = r.room_type || 0;
+      room.location = r.location || "";
+      room.child_protection_room_type = r.child_protection_room_type || 0;
+    } else if (data?.room) {
+      // 兼容返回单个 room 对象的情况
+      const r = data.room;
+      room.id = r.id;
+      room.description = r.description || "";
+      room.name = r.name || "";
+      room.dept_id = r.department_id || r.dept_id || 0;
+      room.room_type = r.room_type || 0;
+      room.location = r.location || "";
+      room.child_protection_room_type = r.child_protection_room_type || 0;
+    }
+    // 同步到 localStorage
+    localStorage.setItem("org", JSON.stringify(org));
+    localStorage.setItem("room", JSON.stringify(room));
+  };
+
+  // ========== 用户相关方法 ==========
+  // 方法 - 登录（保存登录返回的数据）
+  const setLoginData = (data) => {
+    // 处理 TOKEN
+    limeToken.value = data.token;
+    // 用户信息
+    userInfo.id = data.id || 0;
+    userInfo.account = data.account || "";
+    userInfo.nick_name = data.nick_name || "";
+    // 保存到 localStorage
+    localStorage.setItem(CONSTANTS.LIMETOKEN_KEY, data.token);
+  };
 
   // 方法 - 退出登录
   const logout = async () => {
     try {
-      await apiLogout()
+      await apiLogout();
     } catch (e) {
-      console.error('退出接口调用失败:', e)
+      console.error("退出接口调用失败:", e);
     }
-    clearUserInfo()
-    window.location.href = '/login'
-  }
+    clearUserInfo();
+    // 清理机构信息
+    setOrg(null);
+    setRoom(null);
+    // 清理设备注册状态
+    setDeviceRegistered(false);
+    clearDeviceError();
+    window.location.href = "/login";
+  };
 
   // 方法 - 清空用户信息
   const clearUserInfo = () => {
-    limeToken.value = null
-    userInfo.value = null
-    localStorage.removeItem(CONSTANTS.LIMETOKEN_KEY)
-  }
+    limeToken.value = "";
+    userInfo.id = 0;
+    userInfo.account = "";
+    userInfo.nick_name = "";
+    localStorage.removeItem(CONSTANTS.LIMETOKEN_KEY);
+  };
 
   // 方法 - 设置机构信息
   const setOrg = (orgInfo) => {
-    org.value = orgInfo
     if (orgInfo) {
-      localStorage.setItem('org', JSON.stringify(orgInfo))
+      org.org_id = orgInfo.org_id;
+      org.org_code = orgInfo.org_code;
+      org.org_name = orgInfo.org_name;
+      org.dept_id = orgInfo.dept_id;
+      localStorage.setItem("org", JSON.stringify(orgInfo));
     } else {
-      localStorage.removeItem('org')
+      org.org_id = 0;
+      org.org_code = "";
+      org.org_name = "";
+      org.dept_id = 0;
+      localStorage.removeItem("org");
     }
-  }
+  };
 
   // 方法 - 设置诊室信息
   const setRoom = (roomInfo) => {
-    room.value = roomInfo
     if (roomInfo) {
-      localStorage.setItem('room', JSON.stringify(roomInfo))
+      room.id = roomInfo.id;
+      room.description = roomInfo.description;
+      room.name = roomInfo.name;
+      // 兼容 department_id 和 dept_id 两种字段名
+      room.dept_id = roomInfo.department_id || roomInfo.dept_id;
+      room.room_type = roomInfo.room_type;
+      room.location = roomInfo.location;
+      room.child_protection_room_type = roomInfo.child_protection_room_type;
+      localStorage.setItem("room", JSON.stringify(roomInfo));
     } else {
-      localStorage.removeItem('room')
+      room.id = 0;
+      room.description = "";
+      room.name = "";
+      room.dept_id = 0;
+      room.room_type = 0;
+      room.location = "";
+      room.child_protection_room_type = 0;
+      localStorage.removeItem("room");
     }
-  }
+  };
 
   // 方法 - 设置客户端ID
   const setClientID = (id) => {
-    clientID.value = id
-    localStorage.setItem('client_id', id)
-  }
+    clientID.value = id;
+    localStorage.setItem("client_id", id);
+  };
 
   // 初始化
   const init = async () => {
@@ -84,13 +185,18 @@ export const useUserStore = defineStore('user', () => {
         // TODO: 获取用户信息
         // userInfo.value = await apiGetUserInfo()
       } catch (e) {
-        console.error('获取用户信息失败:', e)
+        console.error("获取用户信息失败:", e);
       }
     }
-  }
+  };
 
   return {
-    // 状态
+    // ========== 设备状态 ==========
+    deviceError,
+    deviceRegistered,
+    hasDeviceError,
+
+    // ========== 用户状态 ==========
     limeToken,
     clientID,
     org,
@@ -100,13 +206,18 @@ export const useUserStore = defineStore('user', () => {
     isLoggedIn,
     hasOrgInfo,
     hasRoomInfo,
-    // 方法
-    login,
+    // ========== 设备方法 ==========
+    setDeviceError,
+    clearDeviceError,
+    setDeviceRegistered,
+    setDeviceInfo,
+    // ========== 用户方法 ==========
+    setLoginData,
     logout,
     clearUserInfo,
     setOrg,
     setRoom,
     setClientID,
-    init
-  }
-})
+    init,
+  };
+});
