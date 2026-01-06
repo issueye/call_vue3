@@ -12,6 +12,7 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
+    cors: true,
     proxy: {
       "/local/api": {
         target: "http://0.0.0.0:21999",
@@ -30,5 +31,10 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/static/, "/static"),
       },
     },
+  },
+  // Wails 构建配置
+  build: {
+    outDir: resolve(__dirname, "../dist"),
+    emptyOutDir: true,
   },
 });

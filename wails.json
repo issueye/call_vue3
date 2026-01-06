@@ -1,0 +1,24 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "call-client",
+  "version": "1.0.0",
+  "description": "医疗呼叫客户端桌面版",
+  "frontend:dir": "./frontend",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:build": "npm run dev",
+  "frontend:dev:watcher": "",
+  "frontend:dev:serverUrl": "http://localhost:3000",
+  "wailsjsdir": "./frontend/src/wails",
+  "outputfilename": "call-client",
+  "debounceMS": 100,
+  "devServer": "localhost:34115",
+  "runNonNativeBuildHooks": false,
+  "info": {
+    "companyName": "call-client",
+    "productName": "呼叫客户端",
+    "productVersion": "1.0.0",
+    "copyright": "Copyright © 2024 call-client",
+    "comments": "医疗呼叫客户端桌面版"
+  }
+}
