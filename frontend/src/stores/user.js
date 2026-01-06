@@ -1,12 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { apiLogin, apiLogout } from '@/api'
 import CONSTANTS from '@/constants'
 
 export const useUserStore = defineStore('user', () => {
-  const router = useRouter()
-
   // 状态
   const limeToken = ref(localStorage.getItem(CONSTANTS.LIMETOKEN_KEY))
   const clientID = ref(localStorage.getItem('client_id') || '')
@@ -44,7 +41,7 @@ export const useUserStore = defineStore('user', () => {
       console.error('退出接口调用失败:', e)
     }
     clearUserInfo()
-    router.push('/login')
+    window.location.href = '/login'
   }
 
   // 方法 - 清空用户信息

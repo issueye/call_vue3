@@ -12,7 +12,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 )
 
-//go:embed all:frontend/dist
+//go:embed all:dist
 var assets embed.FS
 
 func main() {
@@ -20,18 +20,18 @@ func main() {
 	app := NewApp()
 
 	err := wails.Run(&options.App{
-		Title:              "呼叫客户端",
-		Width:              1200,
-		Height:             800,
-		MinWidth:           800,
-		MinHeight:          600,
-		DisableResize:      false,
-		Fullscreen:         false,
-		Frameless:          false,
-		StartHidden:        false,
-		HideWindowOnClose:  false,
-		BackgroundColour:   &options.RGBA{R: 255, G: 255, B: 255, A: 1},
-		AlwaysOnTop:        false,
+		Title:             "呼叫客户端",
+		Width:             430,
+		Height:            800,
+		MinWidth:          430,
+		MinHeight:         600,
+		DisableResize:     false,
+		Fullscreen:        false,
+		Frameless:         false,
+		StartHidden:       false,
+		HideWindowOnClose: false,
+		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 1},
+		AlwaysOnTop:       false,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
@@ -80,7 +80,7 @@ func main() {
 		},
 		// Linux 特定配置
 		Linux: &linux.Options{
-			Icon: nil,
+			Icon:                nil,
 			WindowIsTranslucent: false,
 		},
 	})

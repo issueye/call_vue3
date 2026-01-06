@@ -28,3 +28,9 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Auto Claude data directory
+.auto-claude/
+
+frontend/node_modules/*
+dist/*
