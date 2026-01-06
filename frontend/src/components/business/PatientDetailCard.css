@@ -1,0 +1,112 @@
+/* PatientDetailCard 样式 */
+.patient-detail-card {
+  background: var(--bg-white);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  animation: fadeIn 0.3s ease;
+}
+
+.patient-detail-card__header {
+  background: var(--card-header-gradient);
+  padding: var(--spacing-lg);
+  color: white;
+}
+
+.patient-detail-card__header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.patient-detail-card__queue-no {
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-800);
+  line-height: 1;
+}
+
+.patient-detail-card__visit-type {
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  font-size: var(--font-size-sm);
+}
+
+.patient-detail-card__body {
+  padding: var(--spacing-lg);
+}
+
+.patient-detail-card__info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.patient-detail-card__info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.patient-detail-card__info-item .label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.patient-detail-card__info-item .value {
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.patient-detail-card__actions {
+  margin-top: var(--spacing-lg);
+}
+
+.patient-detail-card--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: var(--bg-white);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-card);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  color: var(--text-muted);
+}
+
+.empty-state__icon {
+  opacity: 0.5;
+}
+
+.empty-state__text {
+  font-size: var(--font-size-md);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 650px) {
+  .patient-detail-card__info-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .patient-detail-card__info-item .value {
+    font-size: var(--font-size-md);
+  }
+}

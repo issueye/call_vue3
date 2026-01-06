@@ -1,0 +1,120 @@
+/* PatientItem 样式 */
+.patient-item {
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.patient-item:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: #a0c4e8;
+}
+
+.patient-item--active {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(22, 97, 171, 0.1);
+}
+
+.patient-item--passed {
+  opacity: 0.7;
+  background: #fafafa;
+}
+
+.patient-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+}
+
+.patient-item__name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.patient-item__info {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.patient-item__call {
+  margin-top: var(--spacing-sm);
+}
+
+.patient-item__recall-btn {
+  width: 100%;
+  padding: var(--spacing-sm);
+  background: var(--color-success);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.patient-item__recall-btn:hover {
+  background: #09903c;
+}
+
+.patient-item__pulse {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid var(--status-calling);
+  border-radius: var(--border-radius-lg);
+  animation: pulseRing 2s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+}
+
+/* 状态徽章样式 */
+.patient-item :global(.status-calling) {
+  background: #e6f7ff;
+  color: var(--status-calling);
+}
+
+.patient-item :global(.status-priority) {
+  background: #fffbe6;
+  color: var(--status-priority);
+}
+
+.patient-item :global(.status-waiting) {
+  background: #f6ffed;
+  color: var(--status-waiting);
+}
+
+.patient-item :global(.status-revisit) {
+  background: #f9f0ff;
+  color: var(--status-revisit);
+}
+
+.patient-item :global(.status-passed) {
+  background: #fff2f0;
+  color: var(--status-passed);
+}
+
+.patient-item :global(.status-called) {
+  background: #f5f5f5;
+  color: var(--status-called);
+}

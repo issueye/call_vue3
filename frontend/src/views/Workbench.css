@@ -1,0 +1,71 @@
+/* Workbench 样式 */
+.workbench-page {
+  height: 100vh;
+  background: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.workbench-page__status {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+}
+
+.mqtt-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.mqtt-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.mqtt-status--connected {
+  background: rgba(22, 97, 171, 0.1);
+  color: var(--color-primary);
+}
+
+.mqtt-status--connected::before {
+  background: var(--color-primary);
+}
+
+.mqtt-status--disconnected {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.mqtt-status--disconnected::before {
+  background: #ef4444;
+}
+
+.mqtt-status--connecting,
+.mqtt-status--reconnecting {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.mqtt-status--connecting::before,
+.mqtt-status--reconnecting::before {
+  background: #f59e0b;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

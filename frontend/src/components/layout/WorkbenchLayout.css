@@ -1,0 +1,12 @@
+/* WorkbenchLayout 样式 */
+.workbench-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg-color);
+}
+
+.workbench-layout__main {
+  flex: 1;
+  overflow: hidden;
+}
