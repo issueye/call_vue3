@@ -46,7 +46,7 @@ func (a *App) startup(ctx context.Context) {
 func (a *App) shutdown(ctx context.Context) {
 	a.log.Info("应用关闭")
 
-	// 停止呼叫进程
+	// 停止呼叫进程 测试
 	if err := a.caller.Stop(ctx); err != nil {
 		a.log.Error("停止呼叫进程失败: %v", err)
 	}

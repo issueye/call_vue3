@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from "vue";
-import CallButtons from "@/components/business/CallButtons.vue";
+import CallButtons from "./CallButtons.vue";
 import "./PatientDetailCard.css";
 
 const props = defineProps({
@@ -47,15 +47,17 @@ const visitTypeLabel = computed(() =>
                 </div>
                 <div class="patient-detail-card__info-item">
                     <span class="label">呼叫</span>
-                    <span class="value">{{ patient?.callTimes }}次</span>
+                    <span class="value">{{ patient?.call_count }}次</span>
                 </div>
                 <div class="patient-detail-card__info-item">
                     <span class="label">排队号</span>
-                    <span class="value">{{ patient?.queueNo }}</span>
+                    <span class="value">{{ patient?.line_num }}</span>
                 </div>
                 <div class="patient-detail-card__info-item">
                     <span class="label">电话</span>
-                    <span class="value">{{ patient?.phone || "-" }}</span>
+                    <span class="value">
+                        {{ patient?.tel || patient?.parent_tel || "-" }}
+                    </span>
                 </div>
             </div>
 

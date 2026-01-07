@@ -12,12 +12,6 @@ import {
   apiDoctorVisitedPatient,
 } from "@/api";
 
-const patientType = {
-  waiting: 0,
-  pass: 1,
-  end: 2,
-};
-
 export const usePatientStore = defineStore(
   "patient",
   () => {
@@ -49,6 +43,12 @@ export const usePatientStore = defineStore(
       status: 1,
       wait_count: 0,
     });
+
+    const patientType = {
+      waiting: 0,
+      pass: 1,
+      end: 2,
+    };
 
     // 计算属性
     const patientCount = computed(() => patients.value.length);
@@ -306,6 +306,10 @@ export const usePatientStore = defineStore(
       fetchPatients(docId, patType);
     };
 
+    const getPatientType = () => {
+      return patientType[activeTab.value];
+    };
+
     // 方法 - 设置医生状态
     const setDocStatus = (status) => {
       docStatus.value = { ...docStatus.value, ...status };
@@ -326,6 +330,12 @@ export const usePatientStore = defineStore(
       docStatusHandlers.forEach((handler) => {
         handler(data);
       });
+    };
+
+    // 方法 - 刷新患者列表
+    const refreshPatients = async (docId, patType) => {
+      console.log("docId, patType", docId, patType);
+      await fetchPatients(docId, patType);
     };
 
     // 方法 - 清理所有数据
@@ -387,6 +397,8 @@ export const usePatientStore = defineStore(
       removeDocStatusHandler,
       notifyDocStatusHandlers,
       clearPatients,
+      refreshPatients,
+      getPatientType,
     };
   },
   {

@@ -6,6 +6,7 @@
 
     /* 圆角 */
     --border-radius: 4px;
+    --border-radius-md: 8px;
     --border-radius-lg: 12px;
     --border-radius-xl: 12px;
 

@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from "vue";
-import CallButtons from "@/components/business/CallButtons.vue";
+import CallButtons from "./CallButtons.vue";
 import "./PatientDetailCard.css";
 
 const props = defineProps({

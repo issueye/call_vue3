@@ -8,3 +8,5 @@ export { default as DesktopPatientDetailCard } from './desktop/PatientDetailCard
 export { default as MobileLayout } from './mobile/MobileLayout.vue'
 export { default as MobileHeader } from './mobile/Header.vue'
 export { default as MobilePatientDetailCard } from './mobile/PatientDetailCard.vue'
+export { default as DesktopCallButtons } from './desktop/CallButtons.vue'
+export { default as MobileCallButtons } from './mobile/CallButtons.vue'
