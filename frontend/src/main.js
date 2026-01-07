@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import router from "./router";
 import App from "./App.vue";
 import {
@@ -15,6 +16,7 @@ const app = createApp(App);
 
 // 先注册 pinia
 const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 
 // 程序启动检查（需要等到 pinia 注册后才能使用 store）

@@ -23,6 +23,7 @@ type AppConfig struct {
 	MinWidth        int    `yaml:"min_width"`
 	MinHeight       int    `yaml:"min_height"`
 	MaxWidth        int    `yaml:"max_width"`
+	MaxHeight       int    `yaml:"max_height"`
 	DisableResize   bool   `yaml:"disable_resize"`
 	Fullscreen      bool   `yaml:"fullscreen"`
 	Frameless       bool   `yaml:"frameless"`
@@ -54,8 +55,9 @@ func Default() *Config {
 			Width:           430,
 			Height:          800,
 			MinWidth:        430,
-			MinHeight:       600,
+			MinHeight:       550,
 			MaxWidth:        750,
+			MaxHeight:       700,
 			DisableResize:   false,
 			Fullscreen:      false,
 			Frameless:       false,

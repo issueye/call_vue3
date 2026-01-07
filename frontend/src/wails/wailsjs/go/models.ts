@@ -7,6 +7,7 @@ export namespace config {
 	    MinWidth: number;
 	    MinHeight: number;
 	    MaxWidth: number;
+	    MaxHeight: number;
 	    DisableResize: boolean;
 	    Fullscreen: boolean;
 	    Frameless: boolean;
@@ -25,6 +26,7 @@ export namespace config {
 	        this.MinWidth = source["MinWidth"];
 	        this.MinHeight = source["MinHeight"];
 	        this.MaxWidth = source["MaxWidth"];
+	        this.MaxHeight = source["MaxHeight"];
 	        this.DisableResize = source["DisableResize"];
 	        this.Fullscreen = source["Fullscreen"];
 	        this.Frameless = source["Frameless"];

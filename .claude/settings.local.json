@@ -8,7 +8,8 @@
       "Bash(ls:*)",
       "Bash(dir:*)",
       "Bash(go mod tidy)",
-      "Bash(go build:*)"
+      "Bash(go build:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

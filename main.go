@@ -57,6 +57,7 @@ func main() {
 		MinWidth:          cfg.App.MinWidth,
 		MinHeight:         cfg.App.MinHeight,
 		MaxWidth:          cfg.App.MaxWidth,
+		MaxHeight:         cfg.App.MaxHeight,
 		DisableResize:     cfg.App.DisableResize,
 		Fullscreen:        cfg.App.Fullscreen,
 		Frameless:         cfg.App.Frameless,

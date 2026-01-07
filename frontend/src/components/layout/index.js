@@ -1,5 +1,10 @@
 // 导出布局组件
-export { default as Header } from './Header.vue'
+export { default as Header } from './desktop/Header.vue'
 export { default as WorkbenchLayout } from './WorkbenchLayout.vue'
-export { default as DesktopLayout } from './DesktopLayout.vue'
-export { default as MobileLayout } from './MobileLayout.vue'
+export { default as RightDropdown } from './RightDropdown.vue'
+export { default as DesktopLayout } from './desktop/DesktopLayout.vue'
+export { default as DesktopHeader } from './desktop/Header.vue'
+export { default as DesktopPatientDetailCard } from './desktop/PatientDetailCard.vue'
+export { default as MobileLayout } from './mobile/MobileLayout.vue'
+export { default as MobileHeader } from './mobile/Header.vue'
+export { default as MobilePatientDetailCard } from './mobile/PatientDetailCard.vue'

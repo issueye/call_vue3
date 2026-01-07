@@ -1,39 +1,40 @@
 import { defineStore } from "pinia";
 import { ref, computed, reactive } from "vue";
 import { apiLogin, apiLogout } from "@/api";
-import CONSTANTS from "@/constants";
 
-export const useUserStore = defineStore("user", () => {
-  // ========== 设备状态 ==========
-  const deviceError = ref(""); // 设备错误信息
-  const deviceRegistered = ref(false); // 设备是否已注册
+export const useUserStore = defineStore(
+  "user",
+  () => {
+    // ========== 设备状态 ==========
+    const deviceError = ref(""); // 设备错误信息
+    const deviceRegistered = ref(false); // 设备是否已注册
 
-  // ========== 用户状态 ==========
-  const limeToken = ref(localStorage.getItem(CONSTANTS.LIMETOKEN_KEY) || "");
-  const clientID = ref(localStorage.getItem("client_id") || "");
-  // 机构信息
-  const org = reactive({
-    org_id: 0,
-    org_code: "",
-    org_name: "",
-    dept_id: 0,
-  });
-  // 诊室信息
-  const room = reactive({
-    id: 0,
-    description: "",
-    name: "",
-    dept_id: 0,
-    room_type: 0,
-    location: "",
-    child_protection_room_type: 0,
-  });
-  // 用户信息
-  const userInfo = reactive({
-    id: 0,
-    account: "",
-    nick_name: "",
-  });
+    // ========== 用户状态 ==========
+    const limeToken = ref("");
+    const clientID = ref("");
+    // 机构信息
+    const org = reactive({
+      org_id: 0,
+      org_code: "",
+      org_name: "",
+      dept_id: 0,
+    });
+    // 诊室信息
+    const room = reactive({
+      id: 0,
+      description: "",
+      name: "",
+      dept_id: 0,
+      room_type: 0,
+      location: "",
+      child_protection_room_type: 0,
+    });
+    // 用户信息
+    const userInfo = reactive({
+      id: 0,
+      account: "",
+      nick_name: "",
+    });
 
   // ========== 计算属性 ==========
   const isLoggedIn = computed(() => !!limeToken.value);
@@ -87,9 +88,6 @@ export const useUserStore = defineStore("user", () => {
       room.location = r.location || "";
       room.child_protection_room_type = r.child_protection_room_type || 0;
     }
-    // 同步到 localStorage
-    localStorage.setItem("org", JSON.stringify(org));
-    localStorage.setItem("room", JSON.stringify(room));
   };
 
   // ========== 用户相关方法 ==========
@@ -101,8 +99,6 @@ export const useUserStore = defineStore("user", () => {
     userInfo.id = data.id || 0;
     userInfo.account = data.account || "";
     userInfo.nick_name = data.nick_name || "";
-    // 保存到 localStorage
-    localStorage.setItem(CONSTANTS.LIMETOKEN_KEY, data.token);
   };
 
   // 方法 - 退出登录
@@ -128,7 +124,6 @@ export const useUserStore = defineStore("user", () => {
     userInfo.id = 0;
     userInfo.account = "";
     userInfo.nick_name = "";
-    localStorage.removeItem(CONSTANTS.LIMETOKEN_KEY);
   };
 
   // 方法 - 设置机构信息
@@ -138,13 +133,11 @@ export const useUserStore = defineStore("user", () => {
       org.org_code = orgInfo.org_code;
       org.org_name = orgInfo.org_name;
       org.dept_id = orgInfo.dept_id;
-      localStorage.setItem("org", JSON.stringify(orgInfo));
     } else {
       org.org_id = 0;
       org.org_code = "";
       org.org_name = "";
       org.dept_id = 0;
-      localStorage.removeItem("org");
     }
   };
 
@@ -159,7 +152,6 @@ export const useUserStore = defineStore("user", () => {
       room.room_type = roomInfo.room_type;
       room.location = roomInfo.location;
       room.child_protection_room_type = roomInfo.child_protection_room_type;
-      localStorage.setItem("room", JSON.stringify(roomInfo));
     } else {
       room.id = 0;
       room.description = "";
@@ -168,14 +160,12 @@ export const useUserStore = defineStore("user", () => {
       room.room_type = 0;
       room.location = "";
       room.child_protection_room_type = 0;
-      localStorage.removeItem("room");
     }
   };
 
   // 方法 - 设置客户端ID
   const setClientID = (id) => {
     clientID.value = id;
-    localStorage.setItem("client_id", id);
   };
 
   // 初始化
@@ -220,4 +210,11 @@ export const useUserStore = defineStore("user", () => {
     setClientID,
     init,
   };
-});
+  },
+  {
+    persist: {
+      key: "call-client-user",
+      paths: ["limeToken", "clientID", "org", "room", "deviceRegistered", "userInfo"],
+    },
+  }
+);

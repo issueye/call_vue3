@@ -1,6 +1,7 @@
 <script setup>
 import { usePatientStore } from '@/stores'
-import { PatientList, PatientDetailCard } from '@/components/business'
+import { PatientList } from '@/components/business'
+import DesktopPatientDetailCard from './PatientDetailCard.vue'
 import './DesktopLayout.css'
 
 const patientStore = usePatientStore()
@@ -34,7 +35,6 @@ const handleSkip = () => {
   <div class="desktop-layout">
     <div class="desktop-layout__left">
       <PatientList
-        :patients="patientStore.patients"
         :active-id="patientStore.currentPatient?.id"
         :loading="patientStore.loading"
         @select="handleSelect"
@@ -42,7 +42,7 @@ const handleSkip = () => {
       />
     </div>
     <div class="desktop-layout__right">
-      <PatientDetailCard
+      <DesktopPatientDetailCard
         :patient="patientStore.currentPatient"
         @next="handleNext"
         @recall="handleRecall"

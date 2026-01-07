@@ -1,0 +1,88 @@
+/* MobilePatientDetailCard 样式 */
+.patient-detail-card {
+  background: var(--bg-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  animation: fadeIn 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.patient-detail-card__header {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: white;
+  flex-shrink: 0;
+}
+
+.patient-detail-card__header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.patient-detail-card__queue-no {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-800);
+  line-height: 1;
+}
+
+.patient-detail-card__visit-type {
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 9999px;
+  font-size: var(--font-size-xs);
+}
+
+.patient-detail-card__body {
+  padding: var(--spacing-xs);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.patient-detail-card__info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.patient-detail-card__info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 4px;
+  background: var(--bg-lighter);
+  border-radius: var(--border-radius);
+}
+
+.patient-detail-card__info-item .label {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.patient-detail-card__info-item .value {
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.patient-detail-card__actions {
+  margin-top: auto;
+  padding-top: var(--spacing-xs);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

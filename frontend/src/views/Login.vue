@@ -131,11 +131,11 @@ const handleLogin = async () => {
         // 检查设备注册状态并获取机构信息
         await checkDeviceReg();
 
-        // 获取患者列表
-        const deptId = userStore.room?.dept_id || userStore.org?.dept_id;
-        if (userStore.org?.org_id && deptId) {
-            await patientStore.fetchPatients(userStore.org.org_id, deptId);
-        }
+        // // 获取患者列表
+        // const deptId = userStore.room?.dept_id || userStore.org?.dept_id;
+        // if (userStore.org?.org_id && deptId) {
+        //     await patientStore.fetchPatients(userStore.org.org_id, deptId);
+        // }
 
         // 跳转到工作台
         router.push("/workbench");

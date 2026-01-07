@@ -7,8 +7,9 @@ app:
   width: 430
   height: 800
   min_width: 430
-  min_height: 600
+  min_height: 550
   max_width: 750
+  max_height: 700
   disable_resize: false
   fullscreen: false
   frameless: false

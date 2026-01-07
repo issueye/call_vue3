@@ -1,39 +1,38 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import CONSTANTS from '@/constants'
+import { createRouter, createWebHistory } from "vue-router";
+import CONSTANTS from "@/constants";
 
 const routes = [
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/Login.vue'),
-    meta: { public: true }
+    path: "/login",
+    name: "Login",
+    component: () => import("@/views/Login.vue"),
+    meta: { public: true },
   },
   {
-    path: '/',
-    component: () => import('@/views/Layout.vue'),
-    redirect: '/workbench',
+    path: "/",
+    redirect: "/workbench",
     children: [
       {
-        path: 'workbench',
-        name: 'Workbench',
-        component: () => import('@/views/Workbench.vue')
-      }
-    ]
-  }
-]
+        path: "workbench",
+        name: "Workbench",
+        component: () => import("@/views/Layout.vue"),
+      },
+    ],
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
-})
+  routes,
+});
 
 router.beforeEach((to, _from, next) => {
-  const token = localStorage.getItem(CONSTANTS.LIMETOKEN_KEY)
+  const token = localStorage.getItem(CONSTANTS.LIMETOKEN_KEY);
   if (!to.meta.public && !token) {
-    next({ name: 'Login' })
+    next({ name: "Login" });
   } else {
-    next()
+    next();
   }
-})
+});
 
-export default router
+export default router;

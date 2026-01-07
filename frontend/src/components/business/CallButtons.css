@@ -1,10 +1,10 @@
-/* CallButtons 样式 - 参考旧版本优化 */
+/* CallButtons 样式 */
 .call-buttons {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
-  gap: 8px;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
 }
 
 .call-buttons__btn {
@@ -14,7 +14,7 @@
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   border-radius: var(--border-radius);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   border: none;
   cursor: pointer;
   display: flex;
@@ -23,13 +23,8 @@
   gap: 4px;
 }
 
-.call-buttons__btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
 .call-buttons__btn:active {
-  transform: translateY(0);
+  transform: scale(0.98);
 }
 
 .call-buttons__next {
@@ -37,17 +32,9 @@
   color: white;
 }
 
-.call-buttons__next:hover {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-}
-
 .call-buttons__recall {
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
-}
-
-.call-buttons__recall:hover {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
 }
 
 .call-buttons__skip {
@@ -55,19 +42,16 @@
   color: white;
 }
 
-.call-buttons__skip:hover {
-  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
-}
-
-/* 移动端适配 */
-@media (max-width: 420px) {
+/* 移动端适配 - 垂直布局 */
+@media (max-width: 650px) {
   .call-buttons {
-    gap: 6px;
+    flex-direction: column;
+    gap: var(--spacing-xs);
   }
 
   .call-buttons__btn {
-    height: 44px;
-    font-size: var(--font-size-sm);
-    padding: 0 8px;
+    width: 100%;
+    height: 48px;
+    font-size: var(--font-size-md);
   }
 }

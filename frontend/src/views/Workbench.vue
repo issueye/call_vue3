@@ -62,6 +62,7 @@ const handleSettingsClose = () => {
 
 // 初始化工作台
 const initWorkbench = async () => {
+    console.log("初始化工作台", userStore.org);
     // 检查是否有机构信息
     if (!userStore.org?.org_id) {
         console.warn("未配置机构信息，跳过工作台初始化");
@@ -80,15 +81,15 @@ const initWorkbench = async () => {
     });
 
     // 获取患者列表
-    await patientStore.fetchPatients(userStore.org.org_id, deptId);
+    await patientStore.fetchPatients(
+        userStore.org.org_id,
+        deptId,
+        userStore.userInfo?.id,
+    );
 
     // 如果有诊室信息，获取在诊患者
     if (userStore.room?.id || userStore.org.dept_id) {
-        await patientStore.getVisitedPatient(
-            userStore.userInfo?.id,
-            userStore.org.org_id,
-            deptId,
-        );
+        await patientStore.getVisitedPatient(userStore.userInfo?.id);
     }
 
     return true;
@@ -96,6 +97,7 @@ const initWorkbench = async () => {
 
 // 初始化 MQTT 连接 (参考旧版本)
 const initMqttConnection = async () => {
+    console.log("initMqttConnection -> ", userStore.org);
     // 检查是否已有连接，避免重复初始化
     if (!userStore.org?.org_id) {
         console.warn("机构信息不存在，跳过 MQTT 初始化");
@@ -211,12 +213,16 @@ const cleanup = () => {
 };
 
 onMounted(() => {
+    console.log("初始化工作台");
     // 检测屏幕尺寸
     checkScreenSize();
     const unwatch = onScreenChange(checkScreenSize);
 
     // 初始化 MQTT 连接（患者列表已在登录时获取）
     initMqttConnection();
+
+    // 初始化工作台
+    initWorkbench();
 
     onUnmounted(() => {
         cleanup();
