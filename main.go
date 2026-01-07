@@ -10,28 +10,60 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/linux"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
+
+	"sw_call/internal/config"
+	appLogger "sw_call/internal/logger"
+	"sw_call/internal/service/caller"
 )
 
 //go:embed all:dist
 var assets embed.FS
 
 func main() {
+	// 加载配置
+	cfg, err := config.Load("configs/app.yaml")
+	if err != nil {
+		panic(err)
+	}
+
+	// 初始化日志
+	log, err := appLogger.New(&appLogger.LoggerConfig{
+		Level:    cfg.Logging.Level,
+		Output:   cfg.Logging.Output,
+		FilePath: cfg.Logging.FilePath,
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer log.Close()
+
+	log.Info("应用配置加载完成")
+	log.Debug("应用配置: %+v", cfg.App)
+	log.Debug("进程配置: %+v", cfg.Process)
+
 	// 创建应用实例
 	app := NewApp()
 
-	err := wails.Run(&options.App{
-		Title:             "呼叫客户端",
-		Width:             430,
-		Height:            800,
-		MinWidth:          430,
-		MinHeight:         600,
-		DisableResize:     false,
-		Fullscreen:        false,
-		Frameless:         false,
+	// 初始化进程服务
+	callerService := caller.NewService(&cfg.Process, log)
+
+	// 将服务注入应用
+	app.Initialize(cfg, log, callerService)
+
+	err = wails.Run(&options.App{
+		Title:             cfg.App.Title,
+		Width:             cfg.App.Width,
+		Height:            cfg.App.Height,
+		MinWidth:          cfg.App.MinWidth,
+		MinHeight:         cfg.App.MinHeight,
+		MaxWidth:          cfg.App.MaxWidth,
+		DisableResize:     cfg.App.DisableResize,
+		Fullscreen:        cfg.App.Fullscreen,
+		Frameless:         cfg.App.Frameless,
 		StartHidden:       false,
 		HideWindowOnClose: false,
 		BackgroundColour:  &options.RGBA{R: 255, G: 255, B: 255, A: 1},
-		AlwaysOnTop:       false,
+		AlwaysOnTop:       cfg.App.AlwaysOnTop,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
@@ -86,6 +118,6 @@ func main() {
 	})
 
 	if err != nil {
-		panic(err)
+		log.Fatal("应用运行失败: %v", err)
 	}
 }

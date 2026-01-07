@@ -5,7 +5,10 @@
       "mcp__context7__query-docs",
       "Bash(npm run build)",
       "mcp__mcp-toolkit__create_directory",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Bash(go mod tidy)",
+      "Bash(go build:*)"
     ]
   }
 }
