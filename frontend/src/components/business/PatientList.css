@@ -85,16 +85,26 @@
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
 }
 
 .patient-list__tab:hover {
   background: var(--bg-white);
   color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .patient-list__tab--active {
   background: var(--color-primary);
   color: white;
+}
+
+.patient-list__tab--active:hover {
+  background: var(--color-primary);
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(24, 144, 255, 0.3);
 }
 
 .patient-list__tab-count {

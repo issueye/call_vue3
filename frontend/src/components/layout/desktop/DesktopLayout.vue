@@ -59,14 +59,15 @@ const handleNext = async () => {
 };
 
 // 处理分诊-转诊
-const handleTriage = async (patient, roomId) => {
-    // 确认转诊
-    if (!confirm(`确定要将患者"${patient?.name}"转诊到其他诊室吗？`)) {
-        return;
-    }
-
+const handleTriage = async (patient, info) => {
     try {
-        const result = await patientStore.confirmAssign(patient, roomId);
+        // 获取当前操作员
+        const operator = userStore.userInfo?.id;
+        const result = await patientStore.confirmAssign(
+            operator,
+            info,
+            patient,
+        );
 
         if (result.success) {
             Message.success("转诊成功");
@@ -86,13 +87,9 @@ const handleTriage = async (patient, roomId) => {
 
 // 处理分诊-结诊
 const handleEnd = async (patient) => {
-    if (!confirm(`确定要完成患者"${patient?.name}"的诊疗吗？`)) {
-        return;
-    }
-
     try {
         const result = await patientStore.endPatient(
-            userStore.userInfo.id,
+            userStore.userInfo?.id,
             patient,
         );
 
@@ -101,6 +98,9 @@ const handleEnd = async (patient) => {
 
             // 结诊成功后自动呼叫下一位
             await handleNext();
+
+            // 关闭弹窗
+            patientStore.showNextDialog = false;
         } else {
             Message.error(result.message || "结诊失败");
         }

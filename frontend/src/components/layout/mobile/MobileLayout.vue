@@ -135,6 +135,9 @@ const handleEnd = async (patient) => {
 
             // 结诊成功后自动呼叫下一位
             await handleNext();
+
+            // 关闭弹窗
+            patientStore.showNextDialog = false;
         } else {
             Message.error(result.message || "结诊失败");
         }

@@ -73,6 +73,7 @@ export const usePatientStore = defineStore(
         pageConfig.value.total = data?.total || 0;
 
         docStatus.value.end_count = data?.meta_data.end_count || 0;
+        docStatus.value.pass_count = data?.meta_data.pass_count || 0;
         docStatus.value.wait_count = data?.meta_data.wait_count || 0;
         docStatus.value.call_count = data?.meta_data.call_count || 0;
       } catch (error) {
@@ -173,21 +174,13 @@ export const usePatientStore = defineStore(
       try {
         const params = {
           appointment_id: patient.appointment_id,
-          dept_id: null,
-          room_id: null,
           doc_id: docId,
         };
         await apiPatEnd(params);
-        // 更新本地状态
-        const index = patients.value.findIndex(
-          (p) => p.appointment_id === patient.appointment_id,
-        );
-        if (index !== -1) {
-          patients.value[index] = { ...patients.value[index], state: 99 };
-        }
-        if (currentPatient.value?.id === patient.id) {
-          currentPatient.value = null;
-        }
+
+        // 查询列表
+        await fetchPatients(docId);
+
         visitPatient.value = null;
         return { success: true };
       } catch (error) {

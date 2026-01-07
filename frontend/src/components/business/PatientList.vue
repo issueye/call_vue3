@@ -125,7 +125,7 @@ const handleRefresh = async () => {
             >
                 {{ tab.label }}
                 <span class="patient-list__tab-count">
-                    {{ tab.count.value }}
+                    {{ tab.count }}
                 </span>
             </button>
         </div>
