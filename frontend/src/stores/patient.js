@@ -33,6 +33,10 @@ export const usePatientStore = defineStore(
     const isFirstCall = ref(true); // 是否首次呼叫
     const visitPatient = ref(null); // 当前在诊患者
 
+    // 患者详情弹窗状态
+    const showDetailDialog = ref(false); // 是否显示详情弹窗
+    const dialogPatient = ref(null); // 弹窗展示的患者数据
+
     // 医生状态统计
     const docStatus = ref({
       dept: "",
@@ -49,39 +53,6 @@ export const usePatientStore = defineStore(
       pass: 1,
       end: 2,
     };
-
-    // 计算属性
-    const patientCount = computed(() => patients.value.length);
-    const waitingCount = computed(
-      () => patients.value.filter((p) => p.state === 2 || p.state === 1).length,
-    );
-
-    // 等待中的患者
-    const waitingPatients = computed(() =>
-      patients.value.filter((p) => p.state === 2),
-    );
-
-    // 已过号的患者
-    const passedPatients = computed(() =>
-      patients.value.filter((p) => p.state === 4),
-    );
-
-    // 已结诊的患者
-    const endedPatients = computed(() =>
-      patients.value.filter((p) => p.state === 99),
-    );
-
-    // 根据当前标签获取患者列表
-    const currentList = computed(() => {
-      switch (activeTab.value) {
-        case "pass":
-          return passedPatients.value;
-        case "end":
-          return endedPatients.value;
-        default:
-          return waitingPatients.value;
-      }
-    });
 
     // 方法 - 获取患者列表
     const fetchPatients = async (docId, patType = 0) => {
@@ -100,6 +71,10 @@ export const usePatientStore = defineStore(
         console.log("list -> data", data);
         patients.value = data?.list || [];
         pageConfig.value.total = data?.total || 0;
+
+        docStatus.value.end_count = data?.meta_data.end_count || 0;
+        docStatus.value.wait_count = data?.meta_data.wait_count || 0;
+        docStatus.value.call_count = data?.meta_data.call_count || 0;
       } catch (error) {
         console.error("获取患者列表失败:", error);
         patients.value = [];
@@ -136,24 +111,56 @@ export const usePatientStore = defineStore(
       }
     };
 
-    // 方法 - 过号
-    const skipPatient = async (docId, patient) => {
+    // 方法 - 重呼患者（重新呼叫当前在诊患者）
+    const recallPatient = async (docId, patient) => {
       try {
+        // 如果没有指定患者，重呼当前在诊患者
+        const targetPatient =
+          patient || visitPatient.value || currentCall.value;
+
+        if (!targetPatient?.appointment_id) {
+          return { success: false, message: "无在诊患者，无法重呼" };
+        }
+
         const params = {
-          appointment_id: "",
+          appointment_id: targetPatient.appointment_id,
           dept_id: null,
           room_id: null,
           doc_id: docId,
         };
+
+        const callRes = await apiPatCall(params);
+        console.log("recallRes", callRes);
+
+        // 更新呼叫次数
+        const callCountKey =
+          targetPatient.call_count !== undefined ? "call_count" : "callTimes";
+        if (targetPatient[callCountKey] !== undefined) {
+          targetPatient[callCountKey] += 1;
+        }
+
+        return { success: true, data: callRes };
+      } catch (error) {
+        console.error("重呼患者失败:", error);
+        return { success: false, message: error.message || "重呼失败" };
+      }
+    };
+
+    // 方法 - 过号
+    const skipPatient = async (docId, patient) => {
+      try {
+        const params = {
+          appointment_id: patient.appointment_id,
+          doc_id: docId,
+        };
         await apiPatPass(params);
-        // 更新本地状态
-        const index = patients.value.findIndex((p) => p.id === patient.id);
-        if (index !== -1) {
-          patients.value[index] = { ...patients.value[index], state: 4 };
-        }
-        if (currentPatient.value?.id === patient.id) {
-          currentPatient.value = null;
-        }
+
+        // 查询列表
+        await fetchPatients(docId);
+
+        // 更新当前就诊
+        visitPatient.value = null;
+
         return { success: true };
       } catch (error) {
         console.error("标记过号失败:", error);
@@ -214,11 +221,13 @@ export const usePatientStore = defineStore(
     };
 
     // 方法 - 获取可分配诊室列表
-    const getDeptRoomList = async (orgId, deptId) => {
+    const getDeptRoomList = async (docId) => {
       try {
+        const appointmentId = visitPatient.value?.appointment_id || null;
         const data = await apiGetRoomList({
-          org_id: orgId,
-          dept_id: deptId,
+          doc_id: docId,
+          queue_type: 3, // 医生队列
+          appointment_id: appointmentId,
         });
         deptRoomList.value = data?.list || data || [];
         return deptRoomList.value;
@@ -228,24 +237,27 @@ export const usePatientStore = defineStore(
       }
     };
 
-    // 方法 - 分配患者到其他诊室
-    const assignRoom = async (patient, roomId) => {
+    // 方法 - 分配患者到其他诊室（转诊）
+    const assignRoom = async (docId, info, patient) => {
       try {
-        await apiAssignRoom({
-          patient_id: patient.id,
-          target_room_id: roomId,
-          org_id: patient.org_id,
-        });
-        // 从列表中移除
-        patients.value = patients.value.filter((p) => p.id !== patient.id);
-        if (currentPatient.value?.id === patient.id) {
-          currentPatient.value = null;
-        }
-        showNextDialog.value = false;
-        return { success: true };
+        const params = {
+          appointment_id: patient.appointment_id,
+          new_doc_id: info.id,
+          old_doc_id: docId,
+        };
+        // 调用转诊 API
+        await apiAssignRoom(params);
+
+        // 更新患者列表
+        await fetchPatients(docId);
+
+        // 更新就诊患者
+        visitPatient.value = null;
+
+        return { success: true, message: "转诊成功" };
       } catch (error) {
-        console.error("分配诊室失败:", error);
-        return { success: false, message: error.message || "分配失败" };
+        console.error("转诊失败:", error);
+        return { success: false, message: error.message || "转诊失败" };
       }
     };
 
@@ -264,33 +276,38 @@ export const usePatientStore = defineStore(
       }
     };
 
-    // 方法 - 下一位
+    // 方法 - 下一位（优化版）
     const handleNext = async (docId, orgId, deptId) => {
-      if (!visitPatient.value) {
-        // 首次呼叫
-        if (waitingPatients.value.length > 0) {
-          const nextPatient = waitingPatients.value[0];
+      // 首次呼叫或无在诊患者 - 直接呼叫
+      if (!visitPatient.value || isFirstCall.value) {
+        if (patients.value.length > 0) {
+          const nextPatient = patients.value[0];
           const result = await callPatient(docId, nextPatient);
+
           if (result.success) {
             visitPatient.value = nextPatient;
-            isFirstCall.value = false;
+            isFirstCall.value = false; // 更新首次呼叫标记
           }
+
           return result;
+        } else {
+          return { success: false, message: "暂无候诊患者" };
         }
-      } else {
-        // 有在诊患者，弹出选择框
-        showNextDialog.value = true;
-        // 获取可分配诊室
-        await getDeptRoomList(orgId, deptId);
       }
-      return { success: false };
+
+      // 有在诊患者 - 显示分诊选择弹窗
+      showNextDialog.value = true;
+
+      await getDeptRoomList(docId);
+
+      return { success: false, message: "请先处理当前在诊患者" };
     };
 
     // 方法 - 确认分诊
-    const confirmAssign = async (patient, roomId) => {
-      if (roomId) {
+    const confirmAssign = async (docId, info, patient) => {
+      if (info) {
         // 分配到诊室
-        return await assignRoom(patient, roomId);
+        return await assignRoom(docId, info, patient);
       } else {
         // 结诊
         return await endPatient(patient);
@@ -358,6 +375,18 @@ export const usePatientStore = defineStore(
       docStatusHandlers.clear();
     };
 
+    // 方法 - 打开患者详情弹窗
+    const openDetailDialog = (patient) => {
+      dialogPatient.value = patient;
+      showDetailDialog.value = true;
+    };
+
+    // 方法 - 关闭患者详情弹窗
+    const closeDetailDialog = () => {
+      showDetailDialog.value = false;
+      dialogPatient.value = null;
+    };
+
     return {
       // 状态
       patients,
@@ -371,17 +400,13 @@ export const usePatientStore = defineStore(
       isFirstCall,
       visitPatient,
       docStatus,
-      // 计算属性
-      patientCount,
-      waitingCount,
-      waitingPatients,
-      passedPatients,
-      endedPatients,
-      currentList,
+      showDetailDialog,
+      dialogPatient,
       // 方法
       fetchPatients,
       setCurrentPatient,
       callPatient,
+      recallPatient,
       skipPatient,
       endPatient,
       doctorStart,
@@ -399,6 +424,8 @@ export const usePatientStore = defineStore(
       clearPatients,
       refreshPatients,
       getPatientType,
+      openDetailDialog,
+      closeDetailDialog,
     };
   },
   {

@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import CONSTANTS from "@/constants";
+import { useUserStore } from "@/stores";
 
 const routes = [
   {
@@ -11,13 +12,11 @@ const routes = [
   {
     path: "/",
     redirect: "/workbench",
-    children: [
-      {
-        path: "workbench",
-        name: "Workbench",
-        component: () => import("@/views/Layout.vue"),
-      },
-    ],
+  },
+  {
+    path: "/workbench",
+    name: "Workbench",
+    component: () => import("@/views/Layout.vue"),
   },
 ];
 
@@ -27,8 +26,11 @@ const router = createRouter({
 });
 
 router.beforeEach((to, _from, next) => {
-  const token = localStorage.getItem(CONSTANTS.LIMETOKEN_KEY);
-  if (!to.meta.public && !token) {
+  // 从 Pinia Store 读取登录状态，而不是从 localStorage
+  const userStore = useUserStore();
+  const isLoggedIn = userStore.isLoggedIn;
+
+  if (!to.meta.public && !isLoggedIn) {
     next({ name: "Login" });
   } else {
     next();

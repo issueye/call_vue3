@@ -15,7 +15,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["select", "call"]);
+const emit = defineEmits(["select", "call", "detail"]);
 
 const patientStore = usePatientStore();
 const userStore = useUserStore();
@@ -27,19 +27,21 @@ const tabs = [
     {
         key: "waiting",
         label: "候诊",
-        count: computed(() => patientStore.waitingCount),
+        count: computed(() => patientStore.docStatus.wait_count),
     },
     {
         key: "pass",
         label: "过号",
-        count: computed(() => patientStore.passedPatients.length),
+        count: computed(() => patientStore.docStatus.pass_count),
     },
     {
         key: "end",
         label: "结诊",
-        count: computed(() => patientStore.endedPatients.length),
+        count: computed(() => patientStore.docStatus.end_count),
     },
 ];
+
+console.log("docStatus", patientStore.docStatus);
 
 // 当前列表
 const currentList = computed(() => patientStore.patients);
@@ -49,7 +51,6 @@ const currentTab = computed(() => patientStore.activeTab);
 
 // 切换 Tab
 const handleTabChange = (tabKey) => {
-    console.log("handleTabChange", tabKey);
     patientStore.setActiveTab(tabKey, docId.value);
 };
 
@@ -123,9 +124,9 @@ const handleRefresh = async () => {
                 @click="handleTabChange(tab.key)"
             >
                 {{ tab.label }}
-                <span class="patient-list__tab-count">{{
-                    tab.count.value
-                }}</span>
+                <span class="patient-list__tab-count">
+                    {{ tab.count.value }}
+                </span>
             </button>
         </div>
 
@@ -147,6 +148,7 @@ const handleRefresh = async () => {
                     :active="patient.id === activeId"
                     @click="emit('select', patient)"
                     @call="emit('call', patient)"
+                    @detail="emit('detail', patient)"
                 />
             </transition-group>
         </div>

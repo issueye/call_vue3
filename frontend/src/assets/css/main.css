@@ -43,9 +43,9 @@
     --color-error: #f34718;
 
     /* 患者状态颜色 */
-    --status-calling: #1890ff;
+    --status-calling: #52c41a;
     --status-priority: #faad14;
-    --status-waiting: #52c41a;
+    --status-waiting: #1890ff;
     --status-revisit: #722ed1;
     --status-passed: #ff4d4f;
     --status-called: #8c8c8c;

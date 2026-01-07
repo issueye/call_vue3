@@ -1,9 +1,12 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+import Message from "@/utils/message";
 import { usePatientStore } from "@/stores";
 import { useUserStore } from "@/stores";
 import { PatientList } from "@/components/business";
-import MobilePatientDetailCard from './PatientDetailCard.vue';
+import PatientDetailDialog from "@/components/common/PatientDetailDialog.vue";
+import TriageDialog from "@/components/common/TriageDialog.vue";
+import MobilePatientDetailCard from "./PatientDetailCard.vue";
 import "./MobileLayout.css";
 
 const patientStore = usePatientStore();
@@ -12,11 +15,19 @@ const userStore = useUserStore();
 // 是否显示患者详情（用于切换视图）
 const showDetail = ref(false);
 
-const currentPatient = computed(() => patientStore.currentPatient);
+const currentPatient = computed(() => patientStore.visitPatient);
 
-onMounted(() => {
-    // 获取数据
-    initWorkbench();
+onMounted(async () => {
+    // 初始化工作台
+    await initWorkbench();
+
+    // 获取在诊患者
+    await patientStore.getVisitedPatient(userStore.userInfo.id);
+
+    // 如果没有在诊患者，标记为首次呼叫
+    if (!patientStore.visitPatient) {
+        patientStore.isFirstCall = true;
+    }
 });
 
 // 初始化工作台
@@ -45,13 +56,11 @@ const initWorkbench = async () => {
     await patientStore.fetchPatients(userStore.userInfo?.id);
 
     // 如果有诊室信息，获取在诊患者
-    if (userStore.room?.id || userStore.org.dept_id) {
-        await patientStore.getVisitedPatient(
-            userStore.userInfo?.id,
-            userStore.org.org_id,
-            deptId,
-        );
-    }
+    await patientStore.getVisitedPatient(
+        userStore.userInfo?.id,
+        userStore.org.org_id,
+        deptId,
+    );
 
     return true;
 };
@@ -72,33 +81,91 @@ const handleCall = (patient) => {
     patientStore.callPatient(patient);
 };
 
+// 处理查看详情
+const handleDetail = (patient) => {
+    patientStore.openDetailDialog(patient);
+};
+
 // 处理下一位
-const handleNext = () => {
-    if (patientStore.visitPatient) {
-        patientStore.showNextDialog = true;
-    } else {
-        patientStore.handleNext(
-            patientStore.userInfo?.id,
-            patientStore.org?.org_id,
-            patientStore.room?.dept_id || patientStore.org?.dept_id,
+const handleNext = async () => {
+    await patientStore.handleNext(
+        userStore.userInfo?.id,
+        userStore.org?.org_id,
+        userStore.room?.dept_id || userStore.org?.dept_id,
+    );
+};
+
+// 处理分诊-转诊
+const handleTriage = async (patient, info) => {
+    try {
+        // 获取当前操作员
+        const operator = userStore.userInfo?.id;
+        const result = await patientStore.confirmAssign(
+            operator,
+            info,
+            patient,
         );
+
+        if (result.success) {
+            Message.success("转诊成功");
+            // 关闭分诊弹窗
+            patientStore.showNextDialog = false;
+
+            // 自动呼叫下一位
+            await handleNext();
+        } else {
+            Message.error(result.message || "转诊失败");
+        }
+    } catch (error) {
+        console.error("转诊失败:", error);
+        Message.error(error.message || "转诊失败");
     }
+};
+
+// 处理分诊-结诊
+const handleEnd = async (patient) => {
+    try {
+        const result = await patientStore.endPatient(
+            userStore.userInfo?.id,
+            patient,
+        );
+
+        if (result.success) {
+            Message.success("结诊成功");
+
+            // 结诊成功后自动呼叫下一位
+            await handleNext();
+        } else {
+            Message.error(result.message || "结诊失败");
+        }
+    } catch (error) {
+        console.error("结诊失败:", error);
+        Message.error(error.message || "结诊失败");
+    }
+};
+
+// 处理分诊弹窗取消
+const handleTriageCancel = () => {
+    patientStore.showNextDialog = false;
 };
 
 // 处理重呼
 const handleRecall = () => {
-    if (patientStore.currentPatient) {
+    if (patientStore.visitPatient) {
         patientStore.callPatient(
             userStore.userInfo?.id,
-            patientStore.currentPatient,
+            patientStore.visitPatient,
         );
     }
 };
 
 // 处理过号
 const handleSkip = () => {
-    if (patientStore.currentPatient) {
-        patientStore.skipPatient(patientStore.currentPatient);
+    if (patientStore.visitPatient) {
+        patientStore.skipPatient(
+            userStore.userInfo?.id,
+            patientStore.visitPatient,
+        );
     }
 };
 </script>
@@ -117,18 +184,30 @@ const handleSkip = () => {
 
         <!-- 患者列表区域 -->
         <div class="mobile-layout__section mobile-layout__section--list">
-            <div class="section-header">
-                <span class="section-header__title">排队患者</span>
-                <span class="section-header__count"
-                    >{{ patientStore.waitingCount }}人</span
-                >
-            </div>
             <PatientList
                 :active-id="patientStore.currentPatient?.id"
                 :loading="patientStore.loading"
                 @select="showPatientDetail"
                 @call="handleCall"
+                @detail="handleDetail"
             />
         </div>
     </div>
+
+    <!-- 患者详情弹窗 -->
+    <PatientDetailDialog
+        v-model:visible="patientStore.showDetailDialog"
+        :patient="patientStore.dialogPatient"
+        @close="patientStore.closeDetailDialog"
+    />
+
+    <!-- 分诊弹窗 -->
+    <TriageDialog
+        v-model:visible="patientStore.showNextDialog"
+        :patient="patientStore.visitPatient"
+        :room-list="patientStore.deptRoomList"
+        @triage="handleTriage"
+        @end="handleEnd"
+        @cancel="handleTriageCancel"
+    />
 </template>

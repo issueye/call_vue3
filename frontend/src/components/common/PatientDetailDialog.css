@@ -1,0 +1,311 @@
+/* 遮罩层 */
+.patient-detail-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+/* 弹窗容器 */
+.patient-detail-dialog {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 480px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* 标题栏 */
+.patient-detail-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e4e7ed;
+    flex-shrink: 0;
+}
+
+.patient-detail-dialog__title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #303133;
+}
+
+.patient-detail-dialog__close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #909399;
+    transition: all 0.2s;
+}
+
+.patient-detail-dialog__close:hover {
+    background-color: #f5f7fa;
+    color: #606266;
+}
+
+/* 内容区 */
+.patient-detail-dialog__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.patient-detail-dialog__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: #909399;
+    font-size: 14px;
+}
+
+/* 患者头部信息 */
+.patient-detail-dialog__patient-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.patient-detail-dialog__queue-no {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 2px;
+}
+
+.patient-detail-dialog__status {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* 分区 */
+.patient-detail-dialog__section {
+    margin-bottom: 20px;
+}
+
+.patient-detail-dialog__section:last-child {
+    margin-bottom: 0;
+}
+
+.patient-detail-dialog__section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #f5f7fa;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #303133;
+}
+
+.patient-detail-dialog__section-title .icon {
+    font-size: 16px;
+}
+
+/* 信息网格 */
+.patient-detail-dialog__info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.patient-detail-dialog__info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background-color: #fafbfc;
+    border-radius: 6px;
+    border: 1px solid #e4e7ed;
+}
+
+.patient-detail-dialog__info-item .label {
+    font-size: 12px;
+    color: #909399;
+    font-weight: 500;
+}
+
+.patient-detail-dialog__info-item .value {
+    font-size: 14px;
+    color: #303133;
+    font-weight: 500;
+}
+
+/* 状态徽章 */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* 状态颜色 */
+.status-calling {
+    background-color: #ecf5ff;
+    color: #409eff;
+}
+
+.status-priority {
+    background-color: #fef0f0;
+    color: #f56c6c;
+}
+
+.status-waiting {
+    background-color: #ecf5ff;
+    color: #409eff;
+}
+
+.status-revisit {
+    background-color: #f0f9ff;
+    color: #67c23a;
+}
+
+.status-passed {
+    background-color: #fef0f0;
+    color: #f56c6c;
+}
+
+.status-called {
+    background-color: #f4f4f5;
+    color: #909399;
+}
+
+/* 底部按钮区 */
+.patient-detail-dialog__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #e4e7ed;
+    flex-shrink: 0;
+}
+
+.patient-detail-dialog__btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 80px;
+}
+
+.patient-detail-dialog__btn--close {
+    background-color: #409eff;
+    color: #ffffff;
+}
+
+.patient-detail-dialog__btn--close:hover {
+    background-color: #66b1ff;
+}
+
+/* 动画效果 */
+.dialog-fade-enter-active,
+.dialog-fade-leave-active {
+    transition: opacity 0.3s;
+}
+
+.dialog-fade-enter-from,
+.dialog-fade-leave-to {
+    opacity: 0;
+}
+
+.dialog-slide-enter-active,
+.dialog-slide-leave-active {
+    transition: all 0.3s;
+}
+
+.dialog-slide-enter-from,
+.dialog-slide-leave-to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+}
+
+/* 滚动条样式 */
+.patient-detail-dialog__body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.patient-detail-dialog__body::-webkit-scrollbar-track {
+    background: #f5f7fa;
+    border-radius: 3px;
+}
+
+.patient-detail-dialog__body::-webkit-scrollbar-thumb {
+    background: #dcdfe6;
+    border-radius: 3px;
+}
+
+.patient-detail-dialog__body::-webkit-scrollbar-thumb:hover {
+    background: #c0c4cc;
+}
+
+/* 响应式设计 - 移动端 */
+@media (max-width: 767px) {
+    .patient-detail-dialog-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .patient-detail-dialog {
+        max-width: 100%;
+        max-height: 85vh;
+        border-radius: 16px 16px 0 0;
+        margin: 0;
+    }
+
+    .patient-detail-dialog__header {
+        padding: 16px 20px;
+    }
+
+    .patient-detail-dialog__title {
+        font-size: 16px;
+    }
+
+    .patient-detail-dialog__body {
+        padding: 20px;
+    }
+
+    .patient-detail-dialog__info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .patient-detail-dialog__footer {
+        padding: 12px 20px;
+    }
+
+    .patient-detail-dialog__btn {
+        flex: 1;
+        padding: 12px 20px;
+    }
+}

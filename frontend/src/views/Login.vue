@@ -82,23 +82,18 @@ const checkDeviceReg = async () => {
     }
 
     try {
-        const regRes = await apiCheckDeviceReg(userStore.clientID);
-        console.log("设备注册状态:", regRes);
+        const { org, rooms } = await apiCheckDeviceReg(userStore.clientID);
+        console.log("设备绑定信息:", org, rooms);
 
-        if (regRes.code === 200 && regRes.data) {
-            // 保存机构信息
-            userStore.setOrg(regRes.data.org);
-            // 保存诊室信息（如果有）
-            if (regRes.data.rooms && regRes.data.rooms.length > 0) {
-                userStore.setRoom(regRes.data.rooms[0]);
-            }
-            return true;
-        } else {
-            return false;
+        // 保存机构信息
+        userStore.setOrg(org);
+        // 保存诊室信息（如果有）
+        if (rooms && rooms.length > 0) {
+            userStore.setRoom(rooms[0]);
         }
+        return true;
     } catch (error) {
         console.error("检查设备注册状态失败:", error);
-        alert("检查设备注册状态失败");
         return false;
     }
 };
@@ -129,16 +124,12 @@ const handleLogin = async () => {
         userStore.setLoginData(res);
 
         // 检查设备注册状态并获取机构信息
-        await checkDeviceReg();
+        const isRegistered = await checkDeviceReg();
 
-        // // 获取患者列表
-        // const deptId = userStore.room?.dept_id || userStore.org?.dept_id;
-        // if (userStore.org?.org_id && deptId) {
-        //     await patientStore.fetchPatients(userStore.org.org_id, deptId);
-        // }
+        console.log("设备注册状态:", isRegistered);
 
         // 跳转到工作台
-        router.push("/workbench");
+        router.push("/");
     } catch (error) {
         console.error("登录失败:", error);
         errorMsg.value = error.message || "登录失败";

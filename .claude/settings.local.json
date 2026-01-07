@@ -9,7 +9,12 @@
       "Bash(dir:*)",
       "Bash(go mod tidy)",
       "Bash(go build:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "mcp__mcp-toolkit__list_directory",
+      "mcp__mcp-toolkit__get_working_directory",
+      "mcp__mcp-toolkit__write_file",
+      "Bash(mkdir:*)",
+      "Bash(find:*)"
     ]
   }
 }

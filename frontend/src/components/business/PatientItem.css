@@ -35,10 +35,42 @@
     margin-bottom: var(--spacing-sm);
 }
 
+.patient-item__header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .patient-item__name {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     color: var(--text-primary);
+    flex: 1;
+}
+
+.patient-item__detail-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background-color: #f0f9ff;
+    color: #409eff;
+    border: 1px solid #b3d8ff;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.patient-item__detail-btn:hover {
+    background-color: #409eff;
+    color: #ffffff;
+    border-color: #409eff;
+}
+
+.patient-item__detail-btn svg {
+    flex-shrink: 0;
 }
 
 .patient-item__info {
