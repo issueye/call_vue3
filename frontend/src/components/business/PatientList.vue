@@ -66,7 +66,6 @@ const handleRefresh = async () => {
     isRefreshing.value = true;
     try {
         const patType = patientStore.getPatientType();
-        console.log("patType", patType);
         await patientStore.refreshPatients(docId.value, patType);
     } finally {
         setTimeout(() => {
