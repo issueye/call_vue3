@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"sync"
+	"syscall"
 	"time"
 
 	"sw_call/internal/config"
@@ -64,6 +65,11 @@ func (s *processService) Start(ctx context.Context) error {
 
 		// 创建命令
 		s.cmd = exec.CommandContext(ctx, s.cfg.ExePath, args)
+		// 不显示控制台
+		s.cmd.SysProcAttr = &syscall.SysProcAttr{
+			HideWindow:    true,
+			CreationFlags: 0x08000000,
+		}
 
 		// 启动进程
 		if err := s.cmd.Start(); err != nil {

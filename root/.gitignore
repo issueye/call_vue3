@@ -1,0 +1,8 @@
+# 忽略二进制文件
+process/*.exe
+process/*.dll
+
+# 保留配置文件和图标
+!configs/*.toml
+!icon.ico
+!icon.png

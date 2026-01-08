@@ -21,5 +21,9 @@
     "productVersion": "1.0.0",
     "copyright": "Copyright © 2024 call-client",
     "comments": "医疗呼叫客户端桌面版"
+  },
+  "author": {
+    "name": "call-client",
+    "email": "support@example.com"
   }
 }

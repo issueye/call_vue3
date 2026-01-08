@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -73,7 +74,7 @@ func Default() *Config {
 			BackgroundColor: "#FFFFFF",
 		},
 		Process: ProcessConfig{
-			ExePath:    "build/bin/root/process/suwei_caller_local.exe",
+			ExePath:    "./root/process/suwei_caller_local.exe",
 			Port:       21999,
 			Args:       "--port=%d",
 			StartRetry: 3,
@@ -84,7 +85,7 @@ func Default() *Config {
 			Output: "stdout",
 		},
 		Tray: TrayConfig{
-			Icon:    "build/windows/icon.ico",
+			Icon:    "./root/icon.ico",
 			Tooltip: "呼叫客户端",
 			Title:   "呼叫客户端",
 		},
@@ -104,6 +105,9 @@ func Load(path string) (*Config, error) {
 	if err := toml.Unmarshal(data, cfg); err != nil {
 		return nil, err
 	}
+
+	// 解析相对路径为绝对路径
+	cfg.resolvePaths()
 
 	// 应用环境变量覆盖
 	cfg.applyEnvOverrides()
@@ -156,5 +160,39 @@ func isValidLogLevel(level string) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+// resolvePaths 解析相对路径为绝对路径
+func (c *Config) resolvePaths() {
+	// 获取可执行文件所在目录
+	exePath, err := os.Executable()
+	if err != nil {
+		return
+	}
+	exeDir := filepath.Dir(exePath)
+
+	// 解析进程可执行文件路径
+	if filepath.IsAbs(c.Process.ExePath) {
+		// 已经是绝对路径，无需处理
+	} else if strings.HasPrefix(c.Process.ExePath, "./") {
+		// 相对路径，基于可执行文件目录
+		c.Process.ExePath = filepath.Join(exeDir, c.Process.ExePath)
+	} else {
+		// 相对路径（无 ./ 前缀），基于可执行文件目录
+		c.Process.ExePath = filepath.Join(exeDir, c.Process.ExePath)
+	}
+
+	// 解析托盘图标路径
+	if c.Tray.Icon != "" {
+		if filepath.IsAbs(c.Tray.Icon) {
+			// 已经是绝对路径，无需处理
+		} else if strings.HasPrefix(c.Tray.Icon, "./") {
+			// 相对路径，基于可执行文件目录
+			c.Tray.Icon = filepath.Join(exeDir, c.Tray.Icon)
+		} else {
+			// 相对路径（无 ./ 前缀），基于可执行文件目录
+			c.Tray.Icon = filepath.Join(exeDir, c.Tray.Icon)
+		}
 	}
 }
