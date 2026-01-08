@@ -104,6 +104,9 @@ export const usePatientStore = defineStore(
         // 重新获取患者列表
         await fetchPatients(docId);
 
+        // 切换回候诊 tab
+        setActiveTab("waiting", docId);
+
         currentCall.value = callRes;
         return { success: true };
       } catch (error) {
@@ -140,6 +143,9 @@ export const usePatientStore = defineStore(
           targetPatient[callCountKey] += 1;
         }
 
+        // 切换回候诊 tab
+        setActiveTab("waiting", docId);
+
         return { success: true, data: callRes };
       } catch (error) {
         console.error("重呼患者失败:", error);
@@ -162,6 +168,9 @@ export const usePatientStore = defineStore(
         // 更新当前就诊
         visitPatient.value = null;
 
+        // 切换回候诊 tab
+        setActiveTab("waiting", docId);
+
         return { success: true };
       } catch (error) {
         console.error("标记过号失败:", error);
@@ -182,6 +191,10 @@ export const usePatientStore = defineStore(
         await fetchPatients(docId);
 
         visitPatient.value = null;
+
+        // 切换回候诊 tab
+        setActiveTab("waiting", docId);
+
         return { success: true };
       } catch (error) {
         console.error("结诊失败:", error);
@@ -391,6 +404,9 @@ export const usePatientStore = defineStore(
             docStatus.value.end_count = data.end_count || 0;
             docStatus.value.pass_count = data.pass_count || 0;
             docStatus.value.wait_count = data.wait_count || 0;
+
+            // 更新患者列表
+            fetchPatients(userId);
           }
         }
       });

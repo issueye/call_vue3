@@ -106,8 +106,14 @@ const connectMqtt = async () => {
 
     const mqInfo = await apiGetMqttInfo();
     console.log(`MQTT 信息:`, mqInfo);
-    // 连接 MQTT
-    await linkMqtt(mqInfo.use_tls, mqInfo.host, mqInfo.ws_port, userStore.org);
+    // 连接 MQTT，传入用户信息以启动心跳
+    await linkMqtt(
+        mqInfo.use_tls,
+        mqInfo.host,
+        mqInfo.ws_port,
+        userStore.org,
+        userStore.userInfo
+    );
 };
 
 // 关闭设置回调

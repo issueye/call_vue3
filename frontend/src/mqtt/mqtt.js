@@ -21,8 +21,16 @@ const handlers = reactive(new Map());
 // 当前机构信息
 const currentOrg = ref(null);
 
+// 当前用户信息
+const currentUser = ref(null);
+
 // 患者列表
 const patList = ref([]);
+
+// 心跳定时器
+let heartbeatTimer = null;
+// 心跳间隔（30秒）
+const HEARTBEAT_INTERVAL = 30000;
 
 // 医生状态同步（响应式对象）
 export const docsStatusSync = reactive({
@@ -169,12 +177,21 @@ const connect = (brokerUrl) => {
 };
 
 // 便捷连接函数（带机构信息）
-const linkMqtt = (useTls, host, port, org) => {
+const linkMqtt = (useTls, host, port, org, user = null) => {
   return new Promise((resolve, reject) => {
+    // 保存用户信息
+    if (user) {
+      currentUser.value = user;
+    }
+
     // 检查是否已经连接到同一个机构
     if (currentOrg.value && currentOrg.value.org_code === org?.org_code &&
         connectionStatus.value === CONNECT_STATES.CONNECTED) {
       console.log("MQTT 已连接到当前机构，无需重复连接");
+      // 如果用户信息有变化，更新心跳
+      if (user) {
+        startHeartbeat();
+      }
       resolve();
       return;
     }
@@ -190,6 +207,11 @@ const linkMqtt = (useTls, host, port, org) => {
     initMqtt({});
     connect(url)
       .then(() => {
+        // 启动心跳
+        if (user) {
+          startHeartbeat();
+        }
+
         // 订阅机构医生状态主题
         if (org?.org_code) {
           const topic = MQTT_TOPICS.getOrgDocsStatusTopic(org.org_code);
@@ -286,6 +308,8 @@ const publish = (topic, message, options = { qos: 0, retain: false }) => {
 
 // 断开连接
 const disconnect = () => {
+  // 停止心跳
+  stopHeartbeat();
   if (client.value) {
     client.value.end(true);
     client.value = null;
@@ -293,6 +317,70 @@ const disconnect = () => {
     handlers.clear();
     console.log("MQTT 已断开");
   }
+};
+
+// ==================== 心跳功能 ====================
+
+/**
+ * 启动心跳定时器
+ */
+const startHeartbeat = () => {
+  // 清除已存在的心跳定时器
+  stopHeartbeat();
+
+  // 立即发送一次心跳
+  sendHeartbeat();
+
+  // 设置定时器，每30秒发送一次心跳
+  heartbeatTimer = setInterval(() => {
+    sendHeartbeat();
+  }, HEARTBEAT_INTERVAL);
+
+  console.log(`心跳定时器已启动，间隔 ${HEARTBEAT_INTERVAL / 1000} 秒`);
+};
+
+/**
+ * 停止心跳定时器
+ */
+const stopHeartbeat = () => {
+  if (heartbeatTimer) {
+    clearInterval(heartbeatTimer);
+    heartbeatTimer = null;
+    console.log("心跳定时器已停止");
+  }
+};
+
+/**
+ * 发送心跳消息
+ */
+const sendHeartbeat = () => {
+  if (!currentOrg.value || !currentUser.value) {
+    console.warn("无法发送心跳：缺少机构或用户信息");
+    return;
+  }
+
+  if (connectionStatus.value !== CONNECT_STATES.CONNECTED) {
+    console.warn("无法发送心跳：MQTT 未连接");
+    return;
+  }
+
+  const topic = MQTT_TOPICS.getHeartbeatTopic(
+    currentOrg.value.org_code,
+    currentUser.value.id
+  );
+
+  const heartbeatData = {
+    timestamp: Date.now(),
+    org_code: currentOrg.value.org_code,
+    org_id: currentOrg.value.org_id,
+    doc_id: currentUser.value.id,
+    doc_name: currentUser.value.name || currentUser.value.nickname || "",
+    status: "online",
+    client_id: client.value?.options?.clientId || "",
+  };
+
+  publish(topic, heartbeatData, { qos: 0 });
+  console.log(`心跳已发送 -> ${topic}`);
 };
 
 // 设置消息处理器
@@ -315,6 +403,7 @@ export {
   client,
   connectionStatus,
   currentOrg,
+  currentUser,
   patList,
   saveMqttConfig,
   loadMqttConfig,
@@ -329,4 +418,7 @@ export {
   setHandler,
   removeHandler,
   clearHandlers,
+  startHeartbeat,
+  stopHeartbeat,
+  sendHeartbeat,
 };

@@ -9,7 +9,7 @@ import { mqttStatus } from "@/mqtt";
                 class="status-bar__indicator"
                 :class="`status-bar__indicator--${mqttStatus.color}`"
             />
-            <span class="status-bar__label">MQTT:</span>
+            <span class="status-bar__label">同步服务</span>
             <span class="status-bar__value">{{ mqttStatus.text }}</span>
         </div>
     </div>
@@ -19,7 +19,7 @@ import { mqttStatus } from "@/mqtt";
 .status-bar {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     padding: 8px 16px;
     background-color: #f5f5f5;
     border-top: 1px solid #e0e0e0;

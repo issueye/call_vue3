@@ -3,6 +3,7 @@
 
 // 主题定义
 export const MQTT_ORG_DOCS_STATUS_SYNC = "M/TRANSFER/ORG_DOCS_STATUS_SYNC";
+export const MQTT_HEARTBEAT = "M/TRANSFER/HEARTBEAT";
 
 // 主题前缀
 const TOPIC_PREFIX = "M/TRANSFER";
@@ -17,6 +18,17 @@ const TOPIC_PREFIX = "M/TRANSFER";
  */
 export const getOrgDocsStatusTopic = (orgCode) => {
   return `${MQTT_ORG_DOCS_STATUS_SYNC}/${orgCode}`;
+};
+
+/**
+ * 获取心跳主题
+ * 格式: M/TRANSFER/HEARTBEAT/orgCode/docId
+ * @param {string} orgCode - 机构代码
+ * @param {string|number} docId - 医生ID
+ * @returns {string} 主题字符串
+ */
+export const getHeartbeatTopic = (orgCode, docId) => {
+  return `${MQTT_HEARTBEAT}/${orgCode}/${docId}`;
 };
 
 // ==================== 订阅函数 ====================
