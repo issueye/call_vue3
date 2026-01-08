@@ -69,8 +69,16 @@ const showPatientDetail = (patient) => {
 };
 
 // 处理呼叫
-const handleCall = (patient) => {
-    patientStore.callPatient(patient);
+const handleCall = async (patient) => {
+    const result = await patientStore.callPatient(
+        userStore.userInfo?.id,
+        patient,
+    );
+    if (result.success) {
+        Message.success(`呼叫 ${patient.name || "患者"} 成功`);
+    } else {
+        Message.error(result.message || "呼叫失败");
+    }
 };
 
 // 处理查看详情
@@ -80,11 +88,19 @@ const handleDetail = (patient) => {
 
 // 处理下一位
 const handleNext = async () => {
-    await patientStore.handleNext(
+    const result = await patientStore.handleNext(
         userStore.userInfo?.id,
         userStore.org?.org_id,
         userStore.room?.dept_id || userStore.org?.dept_id,
     );
+    if (result.success) {
+        Message.success("呼叫成功");
+    } else if (result.message) {
+        // 只有在非"请先处理当前在诊患者"的情况下才显示错误
+        if (!result.message.includes("请先处理")) {
+            Message.warning(result.message);
+        }
+    }
 };
 
 // 处理分诊-转诊
@@ -145,22 +161,32 @@ const handleTriageCancel = () => {
 };
 
 // 处理重呼
-const handleRecall = () => {
+const handleRecall = async () => {
     if (patientStore.visitPatient) {
-        patientStore.callPatient(
+        const result = await patientStore.recallPatient(
             userStore.userInfo?.id,
             patientStore.visitPatient,
         );
+        if (result.success) {
+            Message.success("重呼成功");
+        } else {
+            Message.error(result.message || "重呼失败");
+        }
     }
 };
 
 // 处理过号
-const handleSkip = () => {
+const handleSkip = async () => {
     if (patientStore.visitPatient) {
-        patientStore.skipPatient(
+        const result = await patientStore.skipPatient(
             userStore.userInfo?.id,
             patientStore.visitPatient,
         );
+        if (result.success) {
+            Message.success("过号成功");
+        } else {
+            Message.error(result.message || "过号失败");
+        }
     }
 };
 </script>

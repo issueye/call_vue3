@@ -12,6 +12,7 @@ import CONSTANTS from "@/constants";
 import BaseButton from "@/components/common/BaseButton.vue";
 import SettingsDialog from "@/components/common/SettingsDialog.vue";
 import { linkMqtt } from "@/mqtt";
+import Message from "@/utils/message";
 import "./Login.css";
 
 const router = useRouter();
@@ -112,7 +113,7 @@ const connectMqtt = async () => {
         mqInfo.host,
         mqInfo.ws_port,
         userStore.org,
-        userStore.userInfo
+        userStore.userInfo,
     );
 };
 
@@ -170,6 +171,10 @@ const handleLogin = async () => {
 
         // 检查设备注册状态并获取机构信息
         const isRegistered = await checkDeviceReg();
+        if (!isRegistered) {
+            Message.error("设备未注册");
+            return;
+        }
 
         console.log("设备注册状态:", isRegistered ? "已注册" : "未注册");
 
@@ -179,6 +184,8 @@ const handleLogin = async () => {
             userStore.userInfo.id,
             userStore.org.org_code,
         );
+
+        Message.info("登录成功");
 
         // 跳转到工作台
         router.push("/");
