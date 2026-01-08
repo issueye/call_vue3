@@ -41,8 +41,6 @@ const tabs = [
     },
 ];
 
-console.log("docStatus", patientStore.docStatus);
-
 // 当前列表
 const currentList = computed(() => patientStore.patients);
 

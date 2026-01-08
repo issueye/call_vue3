@@ -32,7 +32,6 @@ onMounted(async () => {
 
 // 初始化工作台
 const initWorkbench = async () => {
-    console.log("初始化工作台", userStore.org);
     // 检查是否有机构信息
     if (!userStore.org?.org_id) {
         console.warn("未配置机构信息，跳过工作台初始化");
@@ -44,13 +43,6 @@ const initWorkbench = async () => {
         console.warn("科室ID不存在，跳过获取患者列表");
         return false;
     }
-
-    console.log("初始化工作台，获取患者列表...", {
-        orgId: userStore.org.org_id,
-        deptId,
-        userInfo: userStore.userInfo,
-        userId: userStore.userInfo?.id,
-    });
 
     // 获取患者列表
     await patientStore.fetchPatients(userStore.userInfo?.id);

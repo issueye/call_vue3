@@ -8,9 +8,9 @@ width = 430
 height = 800
 min_width = 430
 min_height = 550
-max_width = 750
+max_width = 430
 max_height = 700
-disable_resize = false
+disable_resize = true
 fullscreen = false
 frameless = false
 always_on_top = false
@@ -41,7 +41,7 @@ output = "stdout"
 # 系统托盘配置
 [tray]
 # 托盘图标路径（支持绝对路径和相对路径）
-icon = "E:\\code\\issueye\\frontend\\call_vue3\\build\\bin\\root\\icon.ico"
+icon = "D:\\dev\\codes\\issueye\\frontend\\call_vue3\\build\\bin\\root\\icon.ico"
 # 托盘提示文字
 tooltip = "呼叫客户端"
 # 托盘标题

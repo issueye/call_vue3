@@ -2,9 +2,7 @@
 import { onMounted } from "vue";
 import { WorkbenchLayout } from "@/components/layout";
 
-onMounted(() => {
-    console.log("初始化工作台");
-});
+onMounted(() => {});
 </script>
 
 <template>

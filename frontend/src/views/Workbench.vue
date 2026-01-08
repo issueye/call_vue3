@@ -5,11 +5,7 @@ import { useScreenSize, onScreenChange } from "@/composables";
 import { WorkbenchLayout } from "@/components/layout";
 import SettingsDialog from "@/components/common/SettingsDialog.vue";
 import {
-    initMqtt,
-    connect,
     disconnect,
-    linkOrgDocsStatus,
-    linkPatientUpdate,
     connectionStatus,
     CONNECT_STATES,
     saveMqttConfig,
@@ -64,7 +60,6 @@ const handleSettingsClose = () => {
 
 // 初始化工作台
 const initWorkbench = async () => {
-    console.log("初始化工作台", userStore.org);
     // 检查是否有机构信息
     if (!userStore.org?.org_id) {
         console.warn("未配置机构信息，跳过工作台初始化");
@@ -76,11 +71,6 @@ const initWorkbench = async () => {
         console.warn("科室ID不存在，跳过获取患者列表");
         return false;
     }
-
-    console.log("初始化工作台，获取患者列表...", {
-        orgId: userStore.org.org_id,
-        deptId,
-    });
 
     // 获取患者列表
     await patientStore.fetchPatients(
@@ -97,140 +87,8 @@ const initWorkbench = async () => {
     return true;
 };
 
-// 使用配置连接 MQTT
-const doMqttConnect = (config) => {
-    const clientId = `caller_${userStore.clientID || Math.random().toString(16).slice(2, 10)}`;
-
-    // 构建 MQTT URL
-    let mqttUrl = `ws://${config.host}:${config.ws_port}/mqtt`;
-    if (config.use_tls) {
-        mqttUrl = `wss://${config.host}:${config.ws_port}/mqtt`;
-    }
-
-    console.log("初始化 MQTT 连接:", {
-        mqttUrl,
-        clientId,
-        orgCode: userStore.org?.org_code,
-    });
-
-    // 初始化 MQTT
-    initMqtt({
-        clientId,
-        clean: true,
-        reconnectPeriod: 3000,
-        connectTimeout: 10000,
-    });
-
-    // 连接
-    connect(mqttUrl);
-
-    // 订阅机构医生状态
-    if (userStore.org?.org_code) {
-        linkOrgDocsStatus(userStore.org.org_code, (message) => {
-            console.log("收到医生状态更新:", message);
-            const msgData = message.data || message;
-
-            // 检查是否是当前医生的状态 (参考旧版本逻辑)
-            if (msgData.doc === userStore.userInfo?.id) {
-                // 更新医生状态
-                patientStore.setDocStatus(msgData);
-            }
-
-            // 将内容推送到所有 handler 中
-            patientStore.notifyDocStatusHandlers(msgData);
-        });
-    }
-
-    // 订阅患者更新
-    const deptId = userStore.room?.dept_id || userStore.org?.dept_id;
-    if (deptId) {
-        linkPatientUpdate(userStore.org?.org_code, deptId, (message) => {
-            console.log("收到患者更新:", message);
-            // 刷新患者列表
-            patientStore.fetchPatients(userStore.org?.org_id, deptId);
-        });
-    }
-};
-
-// 初始化 MQTT 连接 (参考旧版本)
-const initMqttConnection = async () => {
-    console.log("initMqttConnection -> ", userStore.org);
-    // 检查是否已有连接，避免重复初始化
-    if (!userStore.org?.org_id) {
-        console.warn("机构信息不存在，跳过 MQTT 初始化");
-        return;
-    }
-
-    // 1. 先尝试从 localStorage 加载配置并重连
-    const savedConfig = loadMqttConfig();
-    if (savedConfig) {
-        console.log("使用本地存储的 MQTT 配置重连");
-        doMqttConnect(savedConfig);
-        return;
-    }
-
-    // 2. 没有本地配置，从 API 获取
-    try {
-        const { data } = await apiGetMqttInfo();
-        console.log("MQTT 配置:", data);
-
-        // 保存配置到 localStorage
-        saveMqttConfig({
-            host: data.host,
-            port: data.port,
-            ws_port: data.ws_port,
-            use_tls: data.use_tls,
-            org_code: userStore.org?.org_code,
-            org_id: userStore.org?.org_id,
-        });
-
-        doMqttConnect(data);
-    } catch (error) {
-        console.error("获取 MQTT 配置失败:", error);
-        // 如果获取配置失败，使用环境变量作为后备
-        fallbackMqttConnection();
-    }
-};
-
-// 后备 MQTT 连接 (使用环境变量)
-const fallbackMqttConnection = () => {
-    const mqttUrl = import.meta.env.VITE_MQTT_URL || "ws://localhost:8083/mqtt";
-    const clientId = `caller_${userStore.clientID || Math.random().toString(16).slice(2, 10)}`;
-
-    console.log("使用后备配置初始化 MQTT:", mqttUrl);
-
-    initMqtt({
-        clientId,
-        clean: true,
-        reconnectPeriod: 3000,
-    });
-
-    connect(mqttUrl);
-
-    // 订阅机构医生状态
-    if (userStore.org?.org_code) {
-        linkOrgDocsStatus(userStore.org.org_code, (message) => {
-            const msgData = message.data || message;
-            if (msgData.doc === userStore.userInfo?.id) {
-                patientStore.setDocStatus(msgData);
-            }
-            patientStore.notifyDocStatusHandlers(msgData);
-        });
-    }
-
-    // 订阅患者更新
-    const deptId = userStore.room?.dept_id || userStore.org?.dept_id;
-    if (deptId) {
-        linkPatientUpdate(userStore.org?.org_code, deptId, (message) => {
-            patientStore.fetchPatients(userStore.org?.org_id, deptId);
-        });
-    }
-};
-
 // 清理
 const cleanup = () => {
-    console.log("清理 Workbench，断开 MQTT 连接");
-    disconnect();
     // 清理患者数据
     patientStore.clearPatients();
     // 重置初始化状态
@@ -238,13 +96,9 @@ const cleanup = () => {
 };
 
 onMounted(() => {
-    console.log("初始化工作台");
     // 检测屏幕尺寸
     checkScreenSize();
     const unwatch = onScreenChange(checkScreenSize);
-
-    // 初始化 MQTT 连接（患者列表已在登录时获取）
-    initMqttConnection();
 
     // 初始化工作台
     initWorkbench();

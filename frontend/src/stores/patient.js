@@ -11,6 +11,7 @@ import {
   apiAssignRoom,
   apiDoctorVisitedPatient,
 } from "@/api";
+import { setHandler, getOrgDocsStatusTopic } from "@/mqtt";
 
 export const usePatientStore = defineStore(
   "patient",
@@ -68,7 +69,6 @@ export const usePatientStore = defineStore(
           },
         };
         const data = await apiPatLineList(params);
-        console.log("list -> data", data);
         patients.value = data?.list || [];
         pageConfig.value.total = data?.total || 0;
 
@@ -344,7 +344,6 @@ export const usePatientStore = defineStore(
 
     // 方法 - 刷新患者列表
     const refreshPatients = async (docId, patType) => {
-      console.log("docId, patType", docId, patType);
       await fetchPatients(docId, patType);
     };
 
@@ -378,6 +377,23 @@ export const usePatientStore = defineStore(
     const closeDetailDialog = () => {
       showDetailDialog.value = false;
       dialogPatient.value = null;
+    };
+
+    const setMqttHandler = (userId, orgCode) => {
+      const topic = getOrgDocsStatusTopic(orgCode);
+      console.log("setMqttHandler", userId, orgCode, topic);
+      setHandler(topic, (topic, message) => {
+        console.log("收到医生状态更新:", message);
+        // 更新医生状态同步
+        const data = message?.data;
+        if (data?.doc) {
+          if (userId === data.doc) {
+            docStatus.value.end_count = data.end_count || 0;
+            docStatus.value.pass_count = data.pass_count || 0;
+            docStatus.value.wait_count = data.wait_count || 0;
+          }
+        }
+      });
     };
 
     return {
@@ -419,6 +435,7 @@ export const usePatientStore = defineStore(
       getPatientType,
       openDetailDialog,
       closeDetailDialog,
+      setMqttHandler,
     };
   },
   {

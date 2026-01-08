@@ -107,7 +107,7 @@ const connectMqtt = async () => {
     const mqInfo = await apiGetMqttInfo();
     console.log(`MQTT 信息:`, mqInfo);
     // 连接 MQTT
-    linkMqtt(mqInfo.use_tls, mqInfo.host, mqInfo.ws_port, userStore.org);
+    await linkMqtt(mqInfo.use_tls, mqInfo.host, mqInfo.ws_port, userStore.org);
 };
 
 // 关闭设置回调
@@ -124,8 +124,6 @@ const checkDeviceReg = async () => {
 
     try {
         const { org, rooms } = await apiCheckDeviceReg(userStore.clientID);
-        console.log("设备绑定信息:", org, rooms);
-
         // 保存机构信息
         userStore.setOrg(org);
         // 保存诊室信息（如果有）
@@ -167,10 +165,14 @@ const handleLogin = async () => {
         // 检查设备注册状态并获取机构信息
         const isRegistered = await checkDeviceReg();
 
-        console.log("设备注册状态:", isRegistered);
+        console.log("设备注册状态:", isRegistered ? "已注册" : "未注册");
 
         // 连接 MQTT
-        connectMqtt();
+        await connectMqtt();
+        patientStore.setMqttHandler(
+            userStore.userInfo.id,
+            userStore.org.org_code,
+        );
 
         // 跳转到工作台
         router.push("/");
