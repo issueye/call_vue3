@@ -21,7 +21,7 @@ var assets embed.FS
 
 func main() {
 	// 加载配置
-	cfg, err := config.Load("configs/app.yaml")
+	cfg, err := config.Load("configs/app.toml")
 	if err != nil {
 		panic(err)
 	}

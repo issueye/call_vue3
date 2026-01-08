@@ -2,7 +2,12 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore, usePatientStore } from "@/stores";
-import { apiLogin, apiCheckDeviceReg, apiLoadForwardURL } from "@/api";
+import {
+    apiLogin,
+    apiCheckDeviceReg,
+    apiLoadForwardURL,
+    apiGetMqttInfo,
+} from "@/api";
 import CONSTANTS from "@/constants";
 import BaseButton from "@/components/common/BaseButton.vue";
 import SettingsDialog from "@/components/common/SettingsDialog.vue";
@@ -81,31 +86,28 @@ const parseUrl = (url) => {
         const urlObj = new URL(url);
         return {
             host: urlObj.hostname,
-            port: urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80)
+            port: urlObj.port || (urlObj.protocol === "https:" ? 443 : 80),
         };
     } catch (e) {
         console.error("URL 解析失败:", e);
-        return { host: 'localhost', port: 21999 };
+        return { host: "localhost", port: 21999 };
     }
 };
 
 /**
  * 连接 MQTT
  */
-const connectMqtt = () => {
+const connectMqtt = async () => {
     const url = savedServerUrl.value;
     if (!url) {
         console.warn("服务器地址未配置，跳过 MQTT 连接");
         return;
     }
 
-    const { host, port } = parseUrl(url);
-    const org = {
-        code: userStore.org.org_code
-    };
-
-    console.log(`连接 MQTT: ${host}:${port}, 机构: ${org.code}`);
-    linkMqtt(false, host, port, org);
+    const mqInfo = await apiGetMqttInfo();
+    console.log(`MQTT 信息:`, mqInfo);
+    // 连接 MQTT
+    linkMqtt(mqInfo.use_tls, mqInfo.host, mqInfo.ws_port, userStore.org);
 };
 
 // 关闭设置回调

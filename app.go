@@ -34,6 +34,12 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 	a.log.Info("应用启动")
 
+	// 设置托盘上下文
+	SetContext(ctx)
+
+	// 初始化系统托盘
+	InitTray(&a.cfg.Tray)
+
 	// 唤醒呼叫进程
 	if err := a.caller.Start(ctx); err != nil {
 		a.log.Error("启动呼叫进程失败: %v", err)

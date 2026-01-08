@@ -37,23 +37,23 @@ call_vue3/
 ├── main.go                           # Application entry point, config & logger init
 ├── app.go                            # App struct with Go-frontend bindings
 ├── internal/
-│   ├── config/                       # Configuration management (YAML + env vars)
+│   ├── config/                       # Configuration management (TOML + env vars)
 │   ├── logger/                       # Structured logging with levels
 │   ├── errors/                       # Custom error types
 │   └── service/caller/               # Process management service
 └── configs/
-    └── app.yaml                      # Application configuration file
+    └── app.toml                      # Application configuration file
 ```
 
 ### Key Components
 
 - **main.go**: Loads config, initializes logger, creates services, runs Wails app
 - **app.go**: App struct with lifecycle hooks and frontend bindings
-- **internal/config**: Configuration from YAML with env var overrides (CALLER_PORT, CALLER_EXE_PATH, LOG_LEVEL)
+- **internal/config**: Configuration from TOML with env var overrides (CALLER_PORT, CALLER_EXE_PATH, LOG_LEVEL)
 - **internal/service/caller**: Manages suwei_caller_local.exe lifecycle (start/stop/health-check)
 - **internal/logger**: Structured logging with debug/info/warn/error/fatal levels
 
-### Configuration (configs/app.yaml)
+### Configuration (configs/app.toml)
 
 All settings are externalized. Key configs:
 - `app.*`: Window properties (title, size, always_on_top)
@@ -80,7 +80,7 @@ const result = await MyMethod("参数");
 
 ## Key Integration
 
-The app launches `suwei_caller_local.exe` (backend process) on startup via `internal/service/caller/`. Process configuration is loaded from `configs/app.yaml`. Environment variables can override config values:
+The app launches `suwei_caller_local.exe` (backend process) on startup via `internal/service/caller/`. Process configuration is loaded from `configs/app.toml`. Environment variables can override config values:
 - `CALLER_PORT`: Override the port
 - `CALLER_EXE_PATH`: Override the executable path
 - `LOG_LEVEL`: Override logging level

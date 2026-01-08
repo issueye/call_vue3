@@ -5,46 +5,54 @@ import (
 	"strconv"
 	"strings"
 
-	"gopkg.in/yaml.v3"
+	"github.com/pelletier/go-toml/v2"
 )
 
 // Config 应用配置
 type Config struct {
-	App     AppConfig     `yaml:"app"`
-	Process ProcessConfig `yaml:"process"`
-	Logging LoggingConfig `yaml:"logging"`
+	App     AppConfig     `toml:"app"`
+	Process ProcessConfig `toml:"process"`
+	Logging LoggingConfig `toml:"logging"`
+	Tray    TrayConfig    `toml:"tray"`
 }
 
 // AppConfig 应用窗口配置
 type AppConfig struct {
-	Title           string `yaml:"title"`
-	Width           int    `yaml:"width"`
-	Height          int    `yaml:"height"`
-	MinWidth        int    `yaml:"min_width"`
-	MinHeight       int    `yaml:"min_height"`
-	MaxWidth        int    `yaml:"max_width"`
-	MaxHeight       int    `yaml:"max_height"`
-	DisableResize   bool   `yaml:"disable_resize"`
-	Fullscreen      bool   `yaml:"fullscreen"`
-	Frameless       bool   `yaml:"frameless"`
-	AlwaysOnTop     bool   `yaml:"always_on_top"`
-	BackgroundColor string `yaml:"background_color"`
+	Title           string `toml:"title"`
+	Width           int    `toml:"width"`
+	Height          int    `toml:"height"`
+	MinWidth        int    `toml:"min_width"`
+	MinHeight       int    `toml:"min_height"`
+	MaxWidth        int    `toml:"max_width"`
+	MaxHeight       int    `toml:"max_height"`
+	DisableResize   bool   `toml:"disable_resize"`
+	Fullscreen      bool   `toml:"fullscreen"`
+	Frameless       bool   `toml:"frameless"`
+	AlwaysOnTop     bool   `toml:"always_on_top"`
+	BackgroundColor string `toml:"background_color"`
 }
 
 // ProcessConfig 进程配置
 type ProcessConfig struct {
-	ExePath    string `yaml:"exe_path"`
-	Port       int    `yaml:"port"`
-	Args       string `yaml:"args"`
-	StartRetry int    `yaml:"start_retry"`
-	RetryDelay int    `yaml:"retry_delay_ms"`
+	ExePath    string `toml:"exe_path"`
+	Port       int    `toml:"port"`
+	Args       string `toml:"args"`
+	StartRetry int    `toml:"start_retry"`
+	RetryDelay int    `toml:"retry_delay_ms"`
 }
 
 // LoggingConfig 日志配置
 type LoggingConfig struct {
-	Level    string `yaml:"level"`
-	Output   string `yaml:"output"`
-	FilePath string `yaml:"file_path"`
+	Level    string `toml:"level"`
+	Output   string `toml:"output"`
+	FilePath string `toml:"file_path"`
+}
+
+// TrayConfig 系统托盘配置
+type TrayConfig struct {
+	Icon    string `toml:"icon"`
+	Tooltip string `toml:"tooltip"`
+	Title   string `toml:"title"`
 }
 
 // Default 返回默认配置
@@ -75,6 +83,11 @@ func Default() *Config {
 			Level:  "debug",
 			Output: "stdout",
 		},
+		Tray: TrayConfig{
+			Icon:    "build/windows/icon.ico",
+			Tooltip: "呼叫客户端",
+			Title:   "呼叫客户端",
+		},
 	}
 }
 
@@ -88,7 +101,7 @@ func Load(path string) (*Config, error) {
 		return cfg, nil
 	}
 
-	if err := yaml.Unmarshal(data, cfg); err != nil {
+	if err := toml.Unmarshal(data, cfg); err != nil {
 		return nil, err
 	}
 

@@ -54,6 +54,49 @@ export const mqttStatus = computed(() => {
 // 连接选项
 let connectOptions = {}
 
+// localStorage key
+const MQTT_STORAGE_KEY = 'mqtt_config'
+
+// 保存 MQTT 配置到 localStorage
+const saveMqttConfig = (config) => {
+  try {
+    const storageData = {
+      host: config.host,
+      port: config.port,
+      ws_port: config.ws_port,
+      use_tls: config.use_tls,
+      org_code: config.org_code,
+      org_id: config.org_id,
+      timestamp: Date.now()
+    }
+    localStorage.setItem(MQTT_STORAGE_KEY, JSON.stringify(storageData))
+    console.log('MQTT 配置已保存:', storageData)
+  } catch (e) {
+    console.error('保存 MQTT 配置失败:', e)
+  }
+}
+
+// 从 localStorage 加载 MQTT 配置
+const loadMqttConfig = () => {
+  try {
+    const data = localStorage.getItem(MQTT_STORAGE_KEY)
+    if (data) {
+      const config = JSON.parse(data)
+      console.log('从 localStorage 加载 MQTT 配置:', config)
+      return config
+    }
+  } catch (e) {
+    console.error('加载 MQTT 配置失败:', e)
+  }
+  return null
+}
+
+// 清除 MQTT 配置
+const clearMqttConfig = () => {
+  localStorage.removeItem(MQTT_STORAGE_KEY)
+  console.log('MQTT 配置已清除')
+}
+
 // 初始化 MQTT 连接配置
 const initMqtt = (options) => {
   connectOptions = {
@@ -317,6 +360,9 @@ export {
   connectionStatus,
   currentOrg,
   patList,
+  saveMqttConfig,
+  loadMqttConfig,
+  clearMqttConfig,
   initMqtt,
   connect,
   linkMqtt,

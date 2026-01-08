@@ -34,6 +34,22 @@ export namespace config {
 	        this.BackgroundColor = source["BackgroundColor"];
 	    }
 	}
+	export class TrayConfig {
+	    Icon: string;
+	    Tooltip: string;
+	    Title: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new TrayConfig(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Icon = source["Icon"];
+	        this.Tooltip = source["Tooltip"];
+	        this.Title = source["Title"];
+	    }
+	}
 	export class LoggingConfig {
 	    Level: string;
 	    Output: string;
@@ -74,6 +90,7 @@ export namespace config {
 	    App: AppConfig;
 	    Process: ProcessConfig;
 	    Logging: LoggingConfig;
+	    Tray: TrayConfig;
 	
 	    static createFrom(source: any = {}) {
 	        return new Config(source);
@@ -84,6 +101,7 @@ export namespace config {
 	        this.App = this.convertValues(source["App"], AppConfig);
 	        this.Process = this.convertValues(source["Process"], ProcessConfig);
 	        this.Logging = this.convertValues(source["Logging"], LoggingConfig);
+	        this.Tray = this.convertValues(source["Tray"], TrayConfig);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -104,6 +122,7 @@ export namespace config {
 		    return a;
 		}
 	}
+	
 	
 
 }
