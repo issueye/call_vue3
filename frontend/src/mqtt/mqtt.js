@@ -1,5 +1,5 @@
 // MQTT 连接管理模块
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import mqtt from 'mqtt'
 import * as MQTT_TOPICS from './topics'
 
@@ -14,15 +14,47 @@ const CONNECT_STATES = {
 // 全局状态
 const client = ref(null)
 const connectionStatus = ref(CONNECT_STATES.DISCONNECTED)
-const messageHandlers = reactive(new Map())
 
 // 消息处理器
 const handlers = reactive(new Map())
 
+// 当前机构信息
+const currentOrg = ref(null)
+
+// 患者列表
+const patList = ref([])
+
+// 医生状态同步（响应式对象）
+export const docsStatusSync = reactive({
+  dept: '',
+  doc: 0,
+  end_count: 0,
+  pass_count: 0,
+  queue_type: 0,
+  status: 1,
+  wait_count: 0,
+})
+
+// 连接状态UI展示
+export const mqttStatus = computed(() => {
+  switch (connectionStatus.value) {
+    case 'disconnected':
+      return { color: 'red', text: '未连接' }
+    case 'connecting':
+      return { color: 'orange', text: '连接中' }
+    case 'connected':
+      return { color: 'green', text: '已连接' }
+    case 'reconnecting':
+      return { color: 'orange', text: '重连中' }
+    default:
+      return { color: 'red', text: '未连接' }
+  }
+})
+
 // 连接选项
 let connectOptions = {}
 
-// 初始化 MQTT 连接
+// 初始化 MQTT 连接配置
 const initMqtt = (options) => {
   connectOptions = {
     clientId: options.clientId || `caller_${Math.random().toString(16).slice(2, 10)}`,
@@ -30,6 +62,8 @@ const initMqtt = (options) => {
     connectTimeout: 4000,
     reconnectPeriod: 1000,
     keepalive: 60,
+    protocolId: 'MQTT',
+    protocolVersion: 4,
     ...options
   }
 }
@@ -84,6 +118,54 @@ const connect = (brokerUrl) => {
   })
 }
 
+// 便捷连接函数（带机构信息）
+const linkMqtt = (useTls, host, port, org) => {
+  currentOrg.value = org
+
+  let url = `ws://${host}:${port}/mqtt`
+  if (useTls) {
+    url = `wss://${host}:${port}/mqtt`
+  }
+
+  // 初始化并连接
+  initMqtt({})
+  connect(url)
+
+  // 订阅机构医生状态
+  if (org?.code) {
+    const topic = MQTT_TOPICS.subOrgDocsStatus(org.code)
+    subscribe(topic)
+      .then(() => {
+        setHandler(`org_docs_status_${org.code}`, (topic, message) => {
+          console.log(`MQTT -> ${topic}`, message)
+
+          // 更新医生状态同步
+          if (message?.data?.doc) {
+            const userinfo = JSON.parse(localStorage.getItem('user_store') || '{}')
+            if (userinfo?.userInfo?.id === message.data.doc) {
+              docsStatusSync.dept = message.data.dept || ''
+              docsStatusSync.doc = message.data.doc
+              docsStatusSync.end_count = message.data.end_count || 0
+              docsStatusSync.pass_count = message.data.pass_count || 0
+              docsStatusSync.queue_type = message.data.queue_type || 0
+              docsStatusSync.status = message.data.status || 1
+              docsStatusSync.wait_count = message.data.wait_count || 0
+            }
+          }
+
+          // 推送到所有处理器
+          handlers.forEach((handler) => {
+            handler(message)
+          })
+        })
+        console.log(`已订阅机构医生状态: ${topic}`)
+      })
+      .catch(err => {
+        console.error('订阅机构医生状态失败:', err)
+      })
+  }
+}
+
 // 消息处理
 const handleMessage = (topic, payload) => {
   // 调用注册的处理器
@@ -98,7 +180,7 @@ const handleMessage = (topic, payload) => {
 const subscribe = (topic, options = { qos: 0 }) => {
   if (!client.value || connectionStatus.value !== CONNECT_STATES.CONNECTED) {
     console.warn('MQTT 未连接，无法订阅')
-    return
+    return Promise.reject(new Error('MQTT 未连接'))
   }
 
   return new Promise((resolve, reject) => {
@@ -233,9 +315,11 @@ export {
   CONNECT_STATES,
   client,
   connectionStatus,
-  messageHandlers,
+  currentOrg,
+  patList,
   initMqtt,
   connect,
+  linkMqtt,
   subscribe,
   subscribeOnce,
   unsubscribe,

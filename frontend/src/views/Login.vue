@@ -6,6 +6,7 @@ import { apiLogin, apiCheckDeviceReg, apiLoadForwardURL } from "@/api";
 import CONSTANTS from "@/constants";
 import BaseButton from "@/components/common/BaseButton.vue";
 import SettingsDialog from "@/components/common/SettingsDialog.vue";
+import { linkMqtt } from "@/mqtt";
 import "./Login.css";
 
 const router = useRouter();
@@ -69,6 +70,44 @@ const handleSettingsSave = (url) => {
     savedServerUrl.value = url;
 };
 
+/**
+ * 解析 URL 获取 host 和 port
+ * @param {string} url - 完整 URL (如 http://0.0.0.0:21999)
+ * @returns {object} { host, port }
+ */
+const parseUrl = (url) => {
+    try {
+        // 处理 http:// 或 https:// 前缀
+        const urlObj = new URL(url);
+        return {
+            host: urlObj.hostname,
+            port: urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80)
+        };
+    } catch (e) {
+        console.error("URL 解析失败:", e);
+        return { host: 'localhost', port: 21999 };
+    }
+};
+
+/**
+ * 连接 MQTT
+ */
+const connectMqtt = () => {
+    const url = savedServerUrl.value;
+    if (!url) {
+        console.warn("服务器地址未配置，跳过 MQTT 连接");
+        return;
+    }
+
+    const { host, port } = parseUrl(url);
+    const org = {
+        code: userStore.org.org_code
+    };
+
+    console.log(`连接 MQTT: ${host}:${port}, 机构: ${org.code}`);
+    linkMqtt(false, host, port, org);
+};
+
 // 关闭设置回调
 const handleSettingsClose = () => {
     showServerDialog.value = false;
@@ -127,6 +166,9 @@ const handleLogin = async () => {
         const isRegistered = await checkDeviceReg();
 
         console.log("设备注册状态:", isRegistered);
+
+        // 连接 MQTT
+        connectMqtt();
 
         // 跳转到工作台
         router.push("/");

@@ -5,6 +5,7 @@ import DesktopLayout from './desktop/DesktopLayout.vue'
 import MobileLayout from './mobile/MobileLayout.vue'
 import DesktopHeader from './desktop/Header.vue'
 import MobileHeader from './mobile/Header.vue'
+import StatusBar from '@/components/common/StatusBar.vue'
 import './WorkbenchLayout.css'
 
 const { isMobile } = useResponsive()
@@ -18,5 +19,6 @@ const CurrentHeader = computed(() => (isMobile.value ? MobileHeader : DesktopHea
     <main class="workbench-layout__main">
       <component :is="CurrentLayout" />
     </main>
+    <StatusBar />
   </div>
 </template>

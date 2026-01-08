@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed, reactive } from "vue";
 import { apiLogin, apiLogout } from "@/api";
+import { disconnect } from "@/mqtt";
 
 export const useUserStore = defineStore(
   "user",
@@ -108,6 +109,8 @@ export const useUserStore = defineStore(
     } catch (e) {
       console.error("退出接口调用失败:", e);
     }
+    // 断开 MQTT 连接
+    disconnect();
     clearUserInfo();
     // 清理机构信息
     setOrg(null);
