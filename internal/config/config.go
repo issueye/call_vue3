@@ -2,9 +2,6 @@ package config
 
 import (
 	"os"
-	"path/filepath"
-	"strconv"
-	"strings"
 
 	"github.com/pelletier/go-toml/v2"
 )
@@ -12,7 +9,6 @@ import (
 // Config 应用配置
 type Config struct {
 	App     AppConfig     `toml:"app"`
-	Process ProcessConfig `toml:"process"`
 	Logging LoggingConfig `toml:"logging"`
 	Tray    TrayConfig    `toml:"tray"`
 }
@@ -31,15 +27,6 @@ type AppConfig struct {
 	Frameless       bool   `toml:"frameless"`
 	AlwaysOnTop     bool   `toml:"always_on_top"`
 	BackgroundColor string `toml:"background_color"`
-}
-
-// ProcessConfig 进程配置
-type ProcessConfig struct {
-	ExePath    string `toml:"exe_path"`
-	Port       int    `toml:"port"`
-	Args       string `toml:"args"`
-	StartRetry int    `toml:"start_retry"`
-	RetryDelay int    `toml:"retry_delay_ms"`
 }
 
 // LoggingConfig 日志配置
@@ -73,13 +60,6 @@ func Default() *Config {
 			AlwaysOnTop:     false,
 			BackgroundColor: "#FFFFFF",
 		},
-		Process: ProcessConfig{
-			ExePath:    "./root/process/suwei_caller_local.exe",
-			Port:       21999,
-			Args:       "--port=%d",
-			StartRetry: 3,
-			RetryDelay: 1000,
-		},
 		Logging: LoggingConfig{
 			Level:  "debug",
 			Output: "stdout",
@@ -106,93 +86,5 @@ func Load(path string) (*Config, error) {
 		return nil, err
 	}
 
-	// 解析相对路径为绝对路径
-	cfg.resolvePaths()
-
-	// 应用环境变量覆盖
-	cfg.applyEnvOverrides()
-
-	// 验证配置
-	if err := cfg.Validate(); err != nil {
-		return nil, err
-	}
-
 	return cfg, nil
-}
-
-// applyEnvOverrides 应用环境变量覆盖
-func (c *Config) applyEnvOverrides() {
-	// 进程端口覆盖
-	if v := os.Getenv("CALLER_PORT"); v != "" {
-		if port, err := strconv.Atoi(v); err == nil {
-			c.Process.Port = port
-		}
-	}
-
-	// 进程路径覆盖
-	if v := os.Getenv("CALLER_EXE_PATH"); v != "" {
-		c.Process.ExePath = v
-	}
-
-	// 日志级别覆盖
-	if v := os.Getenv("LOG_LEVEL"); v != "" {
-		c.Logging.Level = strings.ToLower(v)
-	}
-}
-
-// Validate 验证配置有效性
-func (c *Config) Validate() error {
-	if c.Process.Port <= 0 || c.Process.Port > 65535 {
-		return ErrInvalidPort
-	}
-	if c.Process.ExePath == "" {
-		return ErrEmptyExePath
-	}
-	if c.Logging.Level != "" && !isValidLogLevel(c.Logging.Level) {
-		return ErrInvalidLogLevel
-	}
-	return nil
-}
-
-func isValidLogLevel(level string) bool {
-	switch strings.ToLower(level) {
-	case "debug", "info", "warn", "error", "fatal":
-		return true
-	default:
-		return false
-	}
-}
-
-// resolvePaths 解析相对路径为绝对路径
-func (c *Config) resolvePaths() {
-	// 获取可执行文件所在目录
-	exePath, err := os.Executable()
-	if err != nil {
-		return
-	}
-	exeDir := filepath.Dir(exePath)
-
-	// 解析进程可执行文件路径
-	if filepath.IsAbs(c.Process.ExePath) {
-		// 已经是绝对路径，无需处理
-	} else if strings.HasPrefix(c.Process.ExePath, "./") {
-		// 相对路径，基于可执行文件目录
-		c.Process.ExePath = filepath.Join(exeDir, c.Process.ExePath)
-	} else {
-		// 相对路径（无 ./ 前缀），基于可执行文件目录
-		c.Process.ExePath = filepath.Join(exeDir, c.Process.ExePath)
-	}
-
-	// 解析托盘图标路径
-	if c.Tray.Icon != "" {
-		if filepath.IsAbs(c.Tray.Icon) {
-			// 已经是绝对路径，无需处理
-		} else if strings.HasPrefix(c.Tray.Icon, "./") {
-			// 相对路径，基于可执行文件目录
-			c.Tray.Icon = filepath.Join(exeDir, c.Tray.Icon)
-		} else {
-			// 相对路径（无 ./ 前缀），基于可执行文件目录
-			c.Tray.Icon = filepath.Join(exeDir, c.Tray.Icon)
-		}
-	}
 }

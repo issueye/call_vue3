@@ -66,29 +66,8 @@ export namespace config {
 	        this.FilePath = source["FilePath"];
 	    }
 	}
-	export class ProcessConfig {
-	    ExePath: string;
-	    Port: number;
-	    Args: string;
-	    StartRetry: number;
-	    RetryDelay: number;
-	
-	    static createFrom(source: any = {}) {
-	        return new ProcessConfig(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.ExePath = source["ExePath"];
-	        this.Port = source["Port"];
-	        this.Args = source["Args"];
-	        this.StartRetry = source["StartRetry"];
-	        this.RetryDelay = source["RetryDelay"];
-	    }
-	}
 	export class Config {
 	    App: AppConfig;
-	    Process: ProcessConfig;
 	    Logging: LoggingConfig;
 	    Tray: TrayConfig;
 	
@@ -99,7 +78,6 @@ export namespace config {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.App = this.convertValues(source["App"], AppConfig);
-	        this.Process = this.convertValues(source["Process"], ProcessConfig);
 	        this.Logging = this.convertValues(source["Logging"], LoggingConfig);
 	        this.Tray = this.convertValues(source["Tray"], TrayConfig);
 	    }
@@ -122,7 +100,6 @@ export namespace config {
 		    return a;
 		}
 	}
-	
 	
 
 }

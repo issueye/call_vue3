@@ -16,19 +16,6 @@ frameless = false
 always_on_top = false
 background_color = "#FFFFFF"
 
-# 呼叫进程配置
-[process]
-# 可执行文件路径（相对于可执行文件的路径）
-exe_path = "./root/process/suwei_caller_local.exe"
-# 进程端口
-port = 21999
-# 启动参数模板，%d 会被端口号替换
-args = "--port=%d"
-# 启动重试次数
-start_retry = 3
-# 重试间隔（毫秒）
-retry_delay_ms = 1000
-
 # 日志配置
 [logging]
 # 日志级别: debug, info, warn, error, fatal
@@ -41,7 +28,7 @@ output = "stdout"
 # 系统托盘配置
 [tray]
 # 托盘图标路径（相对于可执行文件的路径）
-icon = "./root/icon.ico"
+icon = "root/icon.ico"
 # 托盘提示文字
 tooltip = "呼叫客户端"
 # 托盘标题

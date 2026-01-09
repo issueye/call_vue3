@@ -3,12 +3,15 @@ import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import router from "./router";
 import App from "./App.vue";
-import { apiCheckDeviceReg } from "./api";
+import { apiCheckDeviceReg } from "@/api";
+import { updateBaseURL } from "@/utils/request";
 import {
   SaveForwardURL,
   LoadForwardURL,
   LoadClientID,
 } from "@/wails/wailsjs/go/main/App";
+import { LogInfo } from "@/wails/wailsjs/runtime/runtime";
+import Message from "@/utils/message";
 
 import "@/assets/css/main.css";
 
@@ -68,8 +71,13 @@ const startupCheck = async () => {
   try {
     const urlRes = await LoadForwardURL();
     const savedUrl = urlRes?.data || urlRes?.data?.data;
+    // console.log("save_url", savedUrl);
+    LogInfo(`save_url: ${savedUrl}`);
     if (savedUrl) {
       await SaveForwardURL(savedUrl);
+
+      // 更新请求基地址
+      updateBaseURL(savedUrl);
     }
   } catch (error) {
     console.error("检查服务器地址失败:", error);
@@ -82,25 +90,28 @@ const startupCheck = async () => {
     return;
   }
 
-  if (userStore.clientID) {
-    try {
-      const regRes = await apiCheckDeviceReg(userStore.clientID);
-      console.log("apiCheckDeviceReg -> res", regRes);
-      if (regRes) {
-        // 保存设备信息到 Pinia store
-        userStore.setDeviceInfo(regRes);
-        userStore.setDeviceRegistered(true);
-        userStore.clearDeviceError();
-      } else {
-        // 保存错误信息到 Pinia store
-        const errorMsg = "设备检查失败";
-        userStore.setDeviceError(errorMsg);
-        userStore.setDeviceRegistered(false);
-        // 不再弹 alert，由登录页面统一显示
-      }
-    } catch (error) {
-      console.error("检查设备注册状态失败:", error);
+  try {
+    console.log("userStore.clientID", userStore.clientID);
+
+    const { data, error, message } = await apiCheckDeviceReg(
+      userStore.clientID,
+    );
+    console.log("检查设备注册 -> 数据", data, error);
+    if (data) {
+      // 保存设备信息到 Pinia store
+      userStore.setDeviceInfo(data);
+      userStore.setDeviceRegistered(true);
+      userStore.clearDeviceError();
+    } else {
+      // 保存错误信息到 Pinia store
+      const errorMsg = "设备检查失败";
+      userStore.setDeviceError(errorMsg);
+      userStore.setDeviceRegistered(false);
+      // 不再弹 alert，由登录页面统一显示
+      Message.info(error || message);
     }
+  } catch (error) {
+    console.error("检查设备注册状态失败:", error);
   }
 };
 
