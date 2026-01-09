@@ -79,8 +79,17 @@ service.interceptors.response.use(
 
       // 401 未授权 - Token 过期
       if (status === 401) {
-        localStorage.removeItem("lime-token");
-        window.location.href = "/login";
+        const userStore = useUserStore();
+        // 清除用户信息并跳转到登录页
+        userStore.clearUserInfo();
+        userStore.setOrg(null);
+        userStore.setRoom(null);
+        userStore.setDeviceRegistered(false);
+        userStore.clearDeviceError();
+        // 使用动态导入避免循环依赖
+        import("@/router").then(({ default: router }) => {
+          router.push("/login");
+        });
         return Promise.reject(new Error("登录已过期，请重新登录"));
       }
 

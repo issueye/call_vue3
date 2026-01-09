@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import { useUserStore } from "@/stores";
+import { useRouter } from "vue-router";
 import "./RightDropdown.css";
 
 const userStore = useUserStore();
+const router = useRouter();
 
 const showDropdown = ref(false);
 
@@ -28,7 +30,7 @@ const handleSetting = async () => {
 const handleLogout = () => {
     closeDropdown();
     userStore.logout();
-    window.location.href = "/login";
+    router.push("/login");
 };
 
 // 关闭下拉菜单

@@ -185,7 +185,7 @@ const handleLogin = async () => {
         Message.info("登录成功");
 
         // 跳转到工作台
-        router.push("/");
+        router.push("/workbench");
     } catch (error) {
         console.error("登录失败:", error);
         errorMsg.value = error.message || "登录失败";

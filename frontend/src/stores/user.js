@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref, computed, reactive } from "vue";
 import { apiLogin, apiLogout } from "@/api";
 import { disconnect } from "@/mqtt";
+import router from "@/router";
 
 export const useUserStore = defineStore(
   "user",
@@ -117,7 +118,8 @@ export const useUserStore = defineStore(
       // 清理设备注册状态
       setDeviceRegistered(false);
       clearDeviceError();
-      window.location.href = "/login";
+      // 使用 router.push 而不是 window.location.href（Wails 应用需要）
+      router.push("/login");
     };
 
     // 方法 - 清空用户信息
