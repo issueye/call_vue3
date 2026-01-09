@@ -3,15 +3,15 @@ import { post, get } from "@/utils/request";
 
 // 登录
 export const apiLogin = (data) => {
-  return post("/lime/api/v1/s_admin/auth/login", data);
+  return post("/api/v1/s_admin/auth/login", data);
 };
 
 // 退出登录
 export const apiLogout = () => {
-  return post("/lime/api/v1/s_admin/auth/logout");
+  return post("/api/v1/s_admin/auth/logout");
 };
 
 // 获取 MQTT 信息
 export const apiGetMqttInfo = () => {
-  return get("/lime/api/v1/s_admin/common/mqtt");
+  return get("/api/v1/s_admin/common/mqtt");
 };

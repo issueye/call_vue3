@@ -1,8 +1,9 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useUserStore, usePatientStore } from "@/stores";
-import { apiLoadForwardURL, apiSaveForwardURL } from "@/api";
+import { SaveForwardURL, LoadForwardURL } from "@/wails/wailsjs/go/main/App";
 import RightDropdown from "@/components/layout/RightDropdown.vue";
+import Message from "@/utils/message";
 import "./Header.css";
 
 defineProps({
@@ -25,6 +26,20 @@ const userName = computed(
         userStore.userInfo?.nick_name || userStore.userInfo?.account || "用户",
 );
 
+/**
+ * 等待 Wails runtime 准备就绪
+ */
+const waitForWailsRuntime = async (maxWait = 1000) => {
+    const startTime = Date.now();
+    while (Date.now() - startTime < maxWait) {
+        if (window?.go?.main?.App) {
+            return true;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    return false;
+};
+
 // 设置服务器地址
 const handleSetting = () => {
     openServerDialog();
@@ -33,7 +48,13 @@ const handleSetting = () => {
 // 打开服务器对话框
 const openServerDialog = async () => {
     try {
-        const res = await apiLoadForwardURL();
+        const isReady = await waitForWailsRuntime();
+        if (!isReady) {
+            Message.error("系统未就绪");
+            return;
+        }
+
+        const res = await LoadForwardURL();
         serverUrl.value = res?.data || "http://0.0.0.0:21999";
     } catch (error) {
         console.error("加载服务器地址失败:", error);
@@ -45,12 +66,25 @@ const openServerDialog = async () => {
 // 保存服务器地址
 const saveServerUrl = async () => {
     if (!serverUrl.value) {
-        alert("请输入服务器地址");
+        Message.info("请输入服务器地址");
         return;
     }
-    await apiSaveForwardURL(serverUrl.value);
-    showServerDialog.value = false;
-    window.location.reload();
+
+    const isReady = await waitForWailsRuntime();
+    if (!isReady) {
+        Message.error("系统未就绪");
+        return;
+    }
+
+    try {
+        await SaveForwardURL(serverUrl.value);
+        Message.info("服务器地址已保存");
+        showServerDialog.value = false;
+        window.location.reload();
+    } catch (error) {
+        console.error("保存服务器地址失败:", error);
+        Message.error("保存失败");
+    }
 };
 
 // 关闭对话框

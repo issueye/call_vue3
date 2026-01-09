@@ -3,12 +3,12 @@ import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import router from "./router";
 import App from "./App.vue";
+import { apiCheckDeviceReg } from "./api";
 import {
-  apiLoadClientID,
-  apiLoadForwardURL,
-  apiSaveForwardURL,
-  apiCheckDeviceReg,
-} from "./api";
+  SaveForwardURL,
+  LoadForwardURL,
+  LoadClientID,
+} from "@/wails/wailsjs/go/main/App";
 
 import "@/assets/css/main.css";
 
@@ -19,14 +19,35 @@ const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 
+/**
+ * 等待 Wails runtime 准备就绪
+ */
+const waitForWailsRuntime = async (maxWait = 3000) => {
+  const startTime = Date.now();
+  while (Date.now() - startTime < maxWait) {
+    if (window?.go?.main?.App) {
+      return true;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  return false;
+};
+
 // 程序启动检查（需要等到 pinia 注册后才能使用 store）
 const startupCheck = async () => {
   const { useUserStore } = await import("./stores");
   const userStore = useUserStore();
 
+  // 等待 Wails runtime 准备就绪
+  const isReady = await waitForWailsRuntime();
+  if (!isReady) {
+    console.warn("Wails runtime 未就绪，跳过启动检查");
+    return;
+  }
+
   // 1. 检查并设置客户端ID
   try {
-    const clientRes = await apiLoadClientID();
+    const clientRes = await LoadClientID();
     const clientId = clientRes?.data;
     if (clientId) {
       userStore.setClientID(clientId);
@@ -45,10 +66,10 @@ const startupCheck = async () => {
 
   // 2. 检查并设置服务器地址
   try {
-    const urlRes = await apiLoadForwardURL();
+    const urlRes = await LoadForwardURL();
     const savedUrl = urlRes?.data || urlRes?.data?.data;
     if (savedUrl) {
-      await apiSaveForwardURL(savedUrl);
+      await SaveForwardURL(savedUrl);
     }
   } catch (error) {
     console.error("检查服务器地址失败:", error);

@@ -36,3 +36,4 @@ frontend/node_modules/*
 dist/*
 vue3(old)
 nul
+root/storage/*

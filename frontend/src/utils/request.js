@@ -115,4 +115,21 @@ export const del = (url, config) => {
   return service.delete(url, config);
 };
 
+/**
+ * 更新 baseURL
+ * @param {string} url - 新的基础URL
+ */
+export const updateBaseURL = (url) => {
+  if (url && typeof url === 'string') {
+    service.defaults.baseURL = url;
+  }
+};
+
+/**
+ * 获取当前 baseURL
+ */
+export const getBaseURL = () => {
+  return service.defaults.baseURL;
+};
+
 export default service;

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { apiLoadForwardURL, apiSaveForwardURL } from "@/api";
+import { SaveForwardURL, LoadForwardURL } from "@/wails/wailsjs/go/main/App";
 import Message from "@/utils/message";
 import "./SettingsDialog.css";
 
@@ -28,10 +28,30 @@ const emit = defineEmits(["update:visible", "save", "close"]);
 const serverUrl = ref("");
 const loading = ref(false);
 
+/**
+ * 等待 Wails runtime 准备就绪
+ */
+const waitForWailsRuntime = async (maxWait = 3000) => {
+    const startTime = Date.now();
+    while (Date.now() - startTime < maxWait) {
+        if (window?.go?.main?.App) {
+            return true;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    return false;
+};
+
 // 加载保存的服务器地址
 const loadSavedUrl = async () => {
     try {
-        const res = await apiLoadForwardURL();
+        const isReady = await waitForWailsRuntime();
+        if (!isReady) {
+            serverUrl.value = props.defaultUrl;
+            return;
+        }
+
+        const res = await LoadForwardURL();
         const savedUrl = res?.data || res?.data?.data;
         serverUrl.value = savedUrl || props.defaultUrl;
     } catch (error) {
@@ -47,9 +67,15 @@ const saveServerUrl = async () => {
         return;
     }
 
+    const isReady = await waitForWailsRuntime();
+    if (!isReady) {
+        Message.error("Wails runtime 未就绪");
+        return;
+    }
+
     loading.value = true;
     try {
-        await apiSaveForwardURL(serverUrl.value);
+        await SaveForwardURL(serverUrl.value);
         emit("save", serverUrl.value);
         closeDialog();
         Message.info("服务器地址已保存");

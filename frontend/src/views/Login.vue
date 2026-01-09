@@ -1,13 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
-import { useUserStore, usePatientStore } from "@/stores";
-import {
-    apiLogin,
-    apiCheckDeviceReg,
-    apiLoadForwardURL,
-    apiGetMqttInfo,
-} from "@/api";
+import { useUserStore, usePatientStore, useLocalStore } from "@/stores";
+import { apiLogin, apiCheckDeviceReg, apiGetMqttInfo } from "@/api";
 import CONSTANTS from "@/constants";
 import BaseButton from "@/components/common/BaseButton.vue";
 import SettingsDialog from "@/components/common/SettingsDialog.vue";
@@ -18,6 +13,7 @@ import "./Login.css";
 const router = useRouter();
 const userStore = useUserStore();
 const patientStore = usePatientStore();
+const localStore = useLocalStore();
 
 const form = ref({
     account: "",
@@ -46,8 +42,7 @@ const clearDeviceError = () => {
 // 检查并设置服务器地址
 const checkAndSetServerUrl = async () => {
     try {
-        const res = await apiLoadForwardURL();
-        const savedUrl = res?.data || res?.data?.data;
+        const savedUrl = await localStore.loadForwardURL();
 
         if (!savedUrl) {
             // 未配置服务器地址，弹窗配置
@@ -72,8 +67,10 @@ const handleSetting = () => {
 };
 
 // 保存设置回调
-const handleSettingsSave = (url) => {
+const handleSettingsSave = async (url) => {
     savedServerUrl.value = url;
+    // 保存到 local store（会自动更新 axios baseURL）
+    await localStore.saveForwardURL(url);
 };
 
 /**

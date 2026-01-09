@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"log"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -12,8 +13,6 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 
 	"sw_call/internal/config"
-	appLogger "sw_call/internal/logger"
-	"sw_call/internal/service/caller"
 )
 
 //go:embed all:dist
@@ -26,29 +25,11 @@ func main() {
 		panic(err)
 	}
 
-	// 初始化日志
-	log, err := appLogger.New(&appLogger.LoggerConfig{
-		Level:    cfg.Logging.Level,
-		Output:   cfg.Logging.Output,
-		FilePath: cfg.Logging.FilePath,
-	})
-	if err != nil {
-		panic(err)
-	}
-	defer log.Close()
-
-	log.Info("应用配置加载完成")
-	log.Debug("应用配置: %+v", cfg.App)
-	log.Debug("进程配置: %+v", cfg.Process)
-
 	// 创建应用实例
 	app := NewApp()
 
-	// 初始化进程服务
-	callerService := caller.NewService(&cfg.Process, log)
-
 	// 将服务注入应用
-	app.Initialize(cfg, log, callerService)
+	app.Initialize(cfg)
 
 	err = wails.Run(&options.App{
 		Title:             cfg.App.Title,
@@ -75,7 +56,7 @@ func main() {
 		OnStartup:          app.startup,
 		OnShutdown:         app.shutdown,
 		OnBeforeClose:      app.beforeClose,
-		Bind: []interface{}{
+		Bind: []any{
 			app,
 		},
 		// Windows 特定配置
