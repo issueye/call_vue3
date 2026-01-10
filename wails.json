@@ -1,7 +1,7 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
   "name": "call-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "医疗呼叫客户端桌面版",
   "frontend:dir": "./frontend",
   "frontend:install": "npm install",
@@ -12,7 +12,7 @@
   "frontend:dev:watcher": "npm run dev",
   "frontend:dev:serverUrl": "http://localhost:3000",
   "wailsjsdir": "./frontend/src/wails",
-  "outputfilename": "call-client",
+  "outputfilename": "SW叫号器软件",
   "debounceMS": 100,
   "runNonNativeBuildHooks": false,
   "info": {

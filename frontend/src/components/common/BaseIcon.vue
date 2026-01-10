@@ -29,7 +29,7 @@ const props = defineProps({
   size: {
     type: String,
     default: "md",
-    validator: (value) => ["sm", "md", "lg", "xl"].includes(value),
+    validator: (value) => ["xs", "sm", "md", "lg", "xl"].includes(value),
   },
   customClass: {
     type: String,
@@ -57,6 +57,7 @@ const iconSvg = computed(() => icons[props.name] || "");
   display: inline-block;
   vertical-align: middle;
   color: currentColor;
+  transition: transform var(--transition-normal);
 }
 
 .base-icon :deep(svg) {
@@ -64,23 +65,36 @@ const iconSvg = computed(() => icons[props.name] || "");
   height: 100%;
 }
 
+/* 图标尺寸 - 使用 CSS 变量 */
+.base-icon--xs {
+  width: var(--font-xs);
+  height: var(--font-xs);
+}
+
 .base-icon--sm {
-  width: 16px;
-  height: 16px;
+  width: var(--font-sm);
+  height: var(--font-sm);
 }
 
 .base-icon--md {
-  width: 20px;
-  height: 20px;
+  width: var(--font-md);
+  height: var(--font-md);
 }
 
 .base-icon--lg {
-  width: 24px;
-  height: 24px;
+  width: var(--font-lg);
+  height: var(--font-lg);
 }
 
 .base-icon--xl {
-  width: 32px;
-  height: 32px;
+  width: var(--font-xxl);
+  height: var(--font-xxl);
+}
+
+/* 无障碍设计 - 焦点样式 */
+.base-icon:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 </style>

@@ -1,8 +1,8 @@
-/* DesktopHeader 样式 */
+/* ========== DesktopHeader 样式 ========== */
 .workbench-header {
     height: var(--header-height);
     background: var(--bg-white);
-    border-bottom: 2px solid #f0f2f5;
+    border-bottom: 2px solid var(--border-lighter);
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
@@ -28,7 +28,8 @@
 }
 
 .workbench-header__logo {
-    font-size: 24px;
+    width: var(--font-size-xl);
+    height: var(--font-size-xl);
 }
 
 .workbench-header__title {
@@ -83,8 +84,8 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 16px;
-    border-radius: 12px;
+    padding: 6px var(--spacing-lg);
+    border-radius: var(--radius-sm);
     font-size: var(--font-size-sm);
 }
 
@@ -101,7 +102,8 @@
 }
 
 .info-tag__icon {
-    font-size: 14px;
+    width: var(--font-size-md);
+    height: var(--font-size-md);
 }
 
 /* 对话框样式 */
@@ -183,7 +185,7 @@
     border-radius: var(--border-radius);
     font-size: var(--font-size-sm);
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all var(--transition-normal);
 }
 
 .dialog__btn--cancel {

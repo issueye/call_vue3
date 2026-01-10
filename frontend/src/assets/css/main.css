@@ -1,37 +1,59 @@
 :root {
-    /* 基础尺寸 */
+    /* ========== 基础尺寸 ========== */
     --header-height: 80px;
     --header-height-sm: 40px;
     --toolbar-height: 46px;
+    --patient-card-height: 72px;
+    --status-bar-height: 30px;
 
-    /* 圆角 */
-    --border-radius: 4px;
-    --border-radius-md: 8px;
-    --border-radius-lg: 12px;
-    --border-radius-xl: 12px;
+    /* ========== 圆角 ========== */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-full: 9999px;
+    --border-radius: var(--radius-sm);
+    --border-radius-md: var(--radius-md);
+    --border-radius-lg: var(--radius-lg);
+    --border-radius-xl: var(--radius-lg);
 
-    /* 间距 */
-    --spacing-xs: 4px;
-    --spacing-sm: 8px;
-    --spacing-md: 12px;
-    --spacing-lg: 16px;
-    --spacing-xl: 24px;
-    --spacing-xxl: 32px;
+    /* ========== 间距 ========== */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --space-xxl: 32px;
+    --spacing-xs: var(--space-xs);
+    --spacing-sm: var(--space-sm);
+    --spacing-md: var(--space-md);
+    --spacing-lg: var(--space-lg);
+    --spacing-xl: var(--space-xl);
+    --spacing-xxl: var(--space-xxl);
 
-    /* 字体 */
-    --font-size-xs: 12px;
-    --font-size-sm: 13px;
-    --font-size-md: 14px;
-    --font-size-lg: 16px;
-    --font-size-xl: 18px;
-    --font-size-xxl: 24px;
-    --font-size-display: 42px;
+    /* ========== 字号 ========== */
+    --font-xs: 12px;
+    --font-sm: 13px;
+    --font-md: 14px;
+    --font-lg: 16px;
+    --font-xl: 18px;
+    --font-xxl: 24px;
+    --font-display: 42px;
+    --font-size-xs: var(--font-xs);
+    --font-size-sm: var(--font-sm);
+    --font-size-md: var(--font-md);
+    --font-size-lg: var(--font-lg);
+    --font-size-xl: var(--font-xl);
+    --font-size-xxl: var(--font-xxl);
+    --font-size-display: var(--font-display);
 
+    /* ========== 字重 ========== */
+    --font-weight-regular: 400;
     --font-weight-medium: 500;
-    --font-weight-bold: 600;
+    --font-weight-semibold: 600;
+    --font-weight-bold: var(--font-weight-semibold);
     --font-weight-800: 800;
 
-    /* 主题色 */
+    /* ========== 主题色 ========== */
     --color-primary: #1661ab;
     --color-primary-hover: #1a70c0;
     --color-primary-active: #145a96;
@@ -40,35 +62,50 @@
     --color-info: #909399;
     --color-warning: #f9c004;
     --color-danger: #e0321f;
-    --color-error: #f34718;
+    --color-error: #e0321f;
 
-    /* 患者状态颜色 */
-    --status-calling: #52c41a;
-    --status-priority: #faad14;
-    --status-waiting: #1890ff;
-    --status-revisit: #722ed1;
-    --status-passed: #ff4d4f;
-    --status-called: #8c8c8c;
+    /* ========== 患者状态颜色 ========== */
+    --status-calling: #52c41a;  /* 接诊中 */
+    --status-priority: #faad14;  /* 优先 */
+    --status-waiting: #1890ff;   /* 候诊中 */
+    --status-revisit: #722ed1;   /* 复诊 */
+    --status-passed: #ff4d4f;    /* 过号 */
+    --status-called: #8c8c8c;    /* 结诊 */
 
-    /* 渐变 */
+    /* ========== 中性色 ========== */
+    --color-bg: #f5f5f5;
+    --color-white: #ffffff;
+    --color-text-primary: #303133;
+    --color-text-secondary: #606266;
+    --color-text-disabled: #909399;
+
+    /* 布局色（别名，保持向后兼容） */
+    --bg-color: var(--color-bg);
+    --bg-white: var(--color-white);
+    --text-primary: var(--color-text-primary);
+    --text-secondary: var(--color-text-secondary);
+    --text-muted: var(--color-text-disabled);
+
+    /* 边框色 */
+    --color-border: #d9d9d9;
+    --border-color: var(--color-border);
+    --border-light: #e2e2e2;
+    --border-lighter: #ededed;
+
+    /* ========== 渐变 ========== */
     --btn-gradient: linear-gradient(135deg, #3485f9 0%, #549aff 100%);
     --card-header-gradient: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
 
-    /* 阴影 */
+    /* ========== 阴影 ========== */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
     --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.04);
 
-    /* 布局色 */
-    --bg-color: #f5f5f5;
-    --bg-white: #ffffff;
-    --text-primary: #303133;
-    --text-secondary: #606266;
-    --text-muted: #909399;
-    --border-color: #d9d9d9;
-    --border-light: #e2e2e2;
-    --border-lighter: #ededed;
+    /* ========== 过渡 ========== */
+    --transition-fast: 0.15s linear;
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 全局重置 */

@@ -1,8 +1,8 @@
-/* MobileHeader 样式 */
+/* ========== MobileHeader 样式 ========== */
 .workbench-header {
     height: var(--header-height);
     background: var(--bg-white);
-    border-bottom: 2px solid #f0f2f5;
+    border-bottom: 2px solid var(--border-lighter);
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
@@ -28,7 +28,8 @@
 }
 
 .workbench-header__logo {
-    font-size: 20px;
+    width: var(--font-size-lg);
+    height: var(--font-size-lg);
 }
 
 .workbench-header__title {
@@ -55,8 +56,8 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 4px 8px;
-    border-radius: 8px;
+    padding: 4px var(--spacing-sm);
+    border-radius: var(--radius-sm);
     font-size: var(--font-size-xs);
 }
 
@@ -73,7 +74,8 @@
 }
 
 .info-tag__icon {
-    font-size: 12px;
+    width: var(--font-xs);
+    height: var(--font-xs);
 }
 
 /* 对话框样式 */
@@ -91,7 +93,7 @@
 }
 
 .dialog {
-    background: white;
+    background: var(--bg-white);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-lg);
     min-width: 280px;
@@ -156,7 +158,7 @@
     border-radius: var(--border-radius);
     font-size: var(--font-size-sm);
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all var(--transition-normal);
 }
 
 .dialog__btn--cancel {

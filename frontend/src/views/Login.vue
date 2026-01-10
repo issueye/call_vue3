@@ -207,7 +207,7 @@ onMounted(async () => {
 
         <div class="login-page__container">
             <div class="login-page__logo">
-                <BaseIcon name="hospital" class="login-page__logo-icon" />
+                <BaseIcon name="hospital" size="xl" class="login-page__logo-icon" />
                 <h1 class="login-page__logo-text">呼叫客户端</h1>
             </div>
 
@@ -218,7 +218,7 @@ onMounted(async () => {
                 <form class="login-page__form" @submit.prevent="handleLogin">
                     <div class="login-page__input-group">
                         <div class="login-page__input-wrapper">
-                            <BaseIcon name="user" class="login-page__input-icon" />
+                            <BaseIcon name="user" size="sm" class="login-page__input-icon" />
                             <input
                                 v-model="form.account"
                                 type="text"
@@ -231,7 +231,7 @@ onMounted(async () => {
 
                     <div class="login-page__input-group">
                         <div class="login-page__input-wrapper">
-                            <BaseIcon name="lock" class="login-page__input-icon" />
+                            <BaseIcon name="lock" size="sm" class="login-page__input-icon" />
                             <input
                                 v-model="form.password"
                                 type="password"
@@ -264,6 +264,7 @@ onMounted(async () => {
                 <div class="login-page__setting">
                     <BaseIcon
                         name="settings"
+                        size="md"
                         class="login-page__setting-icon"
                         @click="handleSetting"
                         title="设置服务器地址"

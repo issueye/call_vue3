@@ -189,7 +189,7 @@ const handleOverlayClick = (e) => {
                                 class="triage-dialog__options"
                             >
                                 <div class="option-title">
-                                    <BaseIcon name="hospital" size="sm" class="icon" />
+                                    <BaseIcon name="hospital" size="md" class="icon" />
                                     转到其他诊室
                                 </div>
                                 <div class="room-selector">

@@ -1,10 +1,10 @@
-/* MobilePatientDetailCard 样式 */
+/* ========== MobilePatientDetailCard 样式 ========== */
 .patient-detail-card {
   background: var(--bg-white);
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-card);
   overflow: hidden;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn var(--transition-normal);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -13,7 +13,7 @@
 .patient-detail-card__header {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   padding: var(--spacing-xs) var(--spacing-sm);
-  color: white;
+  color: var(--color-white);
   flex-shrink: 0;
 }
 
@@ -30,9 +30,9 @@
 }
 
 .patient-detail-card__visit-type {
-  padding: 2px 8px;
+  padding: var(--spacing-xs) var(--spacing-sm);
   background: rgba(255, 255, 255, 0.25);
-  border-radius: 9999px;
+  border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
 }
 
@@ -47,7 +47,7 @@
 .patient-detail-card__info-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  gap: var(--spacing-xs);
   margin-bottom: var(--spacing-xs);
 }
 
@@ -55,8 +55,8 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 4px;
-  background: var(--bg-lighter);
+  padding: var(--spacing-xs);
+  background: var(--border-lighter);
   border-radius: var(--border-radius);
 }
 

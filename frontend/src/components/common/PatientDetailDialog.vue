@@ -130,7 +130,7 @@ if (typeof window !== "undefined") {
                                 <!-- 基本信息区 -->
                                 <div class="patient-detail-dialog__section">
                                     <div class="patient-detail-dialog__section-title">
-                                        <BaseIcon name="clipboard" size="sm" class="icon" />
+                                        <BaseIcon name="clipboard" size="md" class="icon" />
                                         <span>基本信息</span>
                                     </div>
                                     <div class="patient-detail-dialog__info-grid">
@@ -161,7 +161,7 @@ if (typeof window !== "undefined") {
                                 <!-- 就诊信息区 -->
                                 <div class="patient-detail-dialog__section">
                                     <div class="patient-detail-dialog__section-title">
-                                        <BaseIcon name="hospital" size="sm" class="icon" />
+                                        <BaseIcon name="hospital" size="md" class="icon" />
                                         <span>就诊信息</span>
                                     </div>
                                     <div class="patient-detail-dialog__info-grid">

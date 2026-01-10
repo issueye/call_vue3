@@ -1,4 +1,4 @@
-/* DesktopLayout 样式 */
+/* ========== DesktopLayout 样式 ========== */
 .desktop-layout {
   display: flex;
   gap: var(--spacing-lg);
