@@ -18,8 +18,6 @@ export const usePatientStore = defineStore(
   () => {
     // 状态
     const patients = ref([]); // 患者列表
-    const currentPatient = ref(null); // 当前选中患者
-    const currentCall = ref(null); // 当前呼叫患者
     const loading = ref(false); // 加载状态
     const activeTab = ref("waiting"); // 当前标签: waiting/pass/end
     const pageConfig = ref({
@@ -86,16 +84,12 @@ export const usePatientStore = defineStore(
       }
     };
 
-    // 方法 - 设置当前患者
-    const setCurrentPatient = (patient) => {
-      currentPatient.value = patient;
-    };
-
     // 方法 - 呼叫患者
     const callPatient = async (docId, patient) => {
       try {
+        const appointment_id = patient ? patient.appointment_id : "";
         const params = {
-          appointment_id: "",
+          appointment_id: appointment_id,
           dept_id: null,
           room_id: null,
           doc_id: docId,
@@ -103,13 +97,10 @@ export const usePatientStore = defineStore(
         const { code, data } = await apiPatCall(params);
         console.log("呼叫患者", data);
 
-        // 重新获取患者列表
-        // await fetchPatients(docId);
-
         // 切换回候诊 tab
         setActiveTab("waiting", docId);
 
-        currentCall.value = data;
+        visitPatient.value = data;
         return { success: true };
       } catch (error) {
         console.error("呼叫患者失败:", error);
@@ -121,8 +112,7 @@ export const usePatientStore = defineStore(
     const recallPatient = async (docId, patient) => {
       try {
         // 如果没有指定患者，重呼当前在诊患者
-        const targetPatient =
-          patient || visitPatient.value || currentCall.value;
+        const targetPatient = patient || visitPatient.value;
 
         if (!targetPatient?.appointment_id) {
           return { success: false, message: "无在诊患者，无法重呼" };
@@ -363,8 +353,6 @@ export const usePatientStore = defineStore(
     // 方法 - 清理所有数据
     const clearPatients = () => {
       patients.value = [];
-      currentPatient.value = null;
-      currentCall.value = null;
       visitPatient.value = null;
       pageConfig.value = { pageNum: 1, pageSize: 20, total: 0 };
       docStatus.value = {
@@ -415,8 +403,6 @@ export const usePatientStore = defineStore(
     return {
       // 状态
       patients,
-      currentPatient,
-      currentCall,
       loading,
       activeTab,
       pageConfig,
@@ -429,7 +415,6 @@ export const usePatientStore = defineStore(
       dialogPatient,
       // 方法
       fetchPatients,
-      setCurrentPatient,
       callPatient,
       recallPatient,
       skipPatient,

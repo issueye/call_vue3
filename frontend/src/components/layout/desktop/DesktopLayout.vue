@@ -22,12 +22,11 @@ onMounted(async () => {
     }
 });
 
-const handleSelect = (patient) => {
-    patientStore.setCurrentPatient(patient);
-};
-
 const handleCall = async (patient) => {
-    const result = await patientStore.callPatient(userStore.userInfo.id, patient);
+    const result = await patientStore.callPatient(
+        userStore.userInfo.id,
+        patient,
+    );
     if (result.success) {
         Message.success(`呼叫 ${patient.name || "患者"} 成功`);
     } else {
@@ -38,7 +37,7 @@ const handleCall = async (patient) => {
 const handleRecall = async () => {
     const result = await patientStore.recallPatient(
         userStore.userInfo.id,
-        patientStore.currentPatient,
+        patientStore.visitPatient,
     );
     if (result.success) {
         Message.success("重呼成功");
@@ -145,7 +144,6 @@ const handleTriageCancel = () => {
             <PatientList
                 :active-id="patientStore.currentPatient?.id"
                 :loading="patientStore.loading"
-                @select="handleSelect"
                 @call="handleCall"
                 @detail="handleDetail"
             />
