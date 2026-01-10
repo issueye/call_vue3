@@ -5,6 +5,7 @@ import { useUserStore, usePatientStore, useLocalStore } from "@/stores";
 import { apiLogin, apiCheckDeviceReg, apiGetMqttInfo } from "@/api";
 import CONSTANTS from "@/constants";
 import BaseButton from "@/components/common/BaseButton.vue";
+import BaseIcon from "@/components/common/BaseIcon.vue";
 import SettingsDialog from "@/components/common/SettingsDialog.vue";
 import { linkMqtt } from "@/mqtt";
 import Message from "@/utils/message";
@@ -206,7 +207,7 @@ onMounted(async () => {
 
         <div class="login-page__container">
             <div class="login-page__logo">
-                <div class="login-page__logo-icon">🏥</div>
+                <BaseIcon name="hospital" class="login-page__logo-icon" />
                 <h1 class="login-page__logo-text">呼叫客户端</h1>
             </div>
 
@@ -217,7 +218,7 @@ onMounted(async () => {
                 <form class="login-page__form" @submit.prevent="handleLogin">
                     <div class="login-page__input-group">
                         <div class="login-page__input-wrapper">
-                            <span class="login-page__input-icon">👤</span>
+                            <BaseIcon name="user" class="login-page__input-icon" />
                             <input
                                 v-model="form.account"
                                 type="text"
@@ -230,7 +231,7 @@ onMounted(async () => {
 
                     <div class="login-page__input-group">
                         <div class="login-page__input-wrapper">
-                            <span class="login-page__input-icon">🔒</span>
+                            <BaseIcon name="lock" class="login-page__input-icon" />
                             <input
                                 v-model="form.password"
                                 type="password"
@@ -261,12 +262,12 @@ onMounted(async () => {
                 </form>
 
                 <div class="login-page__setting">
-                    <span
+                    <BaseIcon
+                        name="settings"
                         class="login-page__setting-icon"
                         @click="handleSetting"
                         title="设置服务器地址"
-                        >⚙️</span
-                    >
+                    />
                 </div>
 
                 <!-- 客户端信息展示 -->

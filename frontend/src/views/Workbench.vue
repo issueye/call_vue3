@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, watch, ref, computed } from "vue";
 import { usePatientStore, useUserStore } from "@/stores";
 import { useScreenSize, onScreenChange } from "@/composables";
 import { WorkbenchLayout } from "@/components/layout";
+import BaseIcon from "@/components/common/BaseIcon.vue";
 import SettingsDialog from "@/components/common/SettingsDialog.vue";
 import {
     disconnect,
@@ -116,7 +117,7 @@ onMounted(() => {
         <div class="workbench-page__operator">
             <div class="operator-info">
                 <span class="operator-info__item">
-                    <span class="operator-info__icon">👤</span>
+                    <BaseIcon name="user" size="sm" class="operator-info__icon" />
                     <span class="operator-info__value">{{
                         userStore.userInfo?.nick_name ||
                         userStore.userInfo?.account ||
@@ -124,13 +125,13 @@ onMounted(() => {
                     }}</span>
                 </span>
                 <span class="operator-info__item">
-                    <span class="operator-info__icon">🏢</span>
+                    <BaseIcon name="building" size="sm" class="operator-info__icon" />
                     <span class="operator-info__value">{{
                         userStore.org?.org_name || "未配置机构"
                     }}</span>
                 </span>
                 <span class="operator-info__item">
-                    <span class="operator-info__icon">🩺</span>
+                    <BaseIcon name="stethoscope" size="sm" class="operator-info__icon" />
                     <span class="operator-info__value">{{
                         userStore.room?.name || "未配置诊室"
                     }}</span>

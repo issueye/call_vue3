@@ -1,84 +1,84 @@
 /* MobileLayout 样式 */
 .mobile-layout {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  overflow-y: auto;
-  overflow-x: hidden;
-  background-color: var(--bg-color);
+    width: calc(100% - var(--spacing-sm) * 2);
+    height: calc(100% - var(--spacing-sm) * 2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: var(--bg-color);
 }
 
 /* 区域样式 */
 .mobile-layout__section {
-  width: 100%;
-  background: var(--bg-white);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-card);
-  overflow: hidden;
-  border: 1px solid var(--border-light);
-  flex-shrink: 0;
+    width: 100%;
+    background: var(--bg-white);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    flex-shrink: 0;
 }
 
 .mobile-layout__section--patient {
-  flex-shrink: 0;
-  animation: slideInDown 0.3s ease;
+    flex-shrink: 0;
+    animation: slideInDown 0.3s ease;
 }
 
 .mobile-layout__section--list {
-  flex: 1;
-  min-height: 200px;
-  animation: slideInUp 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+    flex: 1;
+    min-height: 200px;
+    animation: slideInUp 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 /* 区域头部 */
 .section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-bottom: 1px solid var(--border-light);
 }
 
 .section-header__title {
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 .section-header__count {
-  font-size: var(--font-size-xs);
-  color: var(--color-primary);
-  font-weight: 500;
-  background: rgba(22, 97, 171, 0.1);
-  padding: 2px 6px;
-  border-radius: 8px;
+    font-size: var(--font-size-xs);
+    color: var(--color-primary);
+    font-weight: 500;
+    background: rgba(22, 97, 171, 0.1);
+    padding: 2px 6px;
+    border-radius: 8px;
 }
 
 /* 动画效果 */
 @keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

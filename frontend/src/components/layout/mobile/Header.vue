@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 import { useUserStore, usePatientStore } from "@/stores";
 import { SaveForwardURL, LoadForwardURL } from "@/wails/wailsjs/go/main/App";
 import RightDropdown from "@/components/layout/RightDropdown.vue";
+import BaseIcon from "@/components/common/BaseIcon.vue";
 import Message from "@/utils/message";
 import "./Header.css";
 
@@ -98,7 +99,7 @@ const closeServerDialog = () => {
         <div class="workbench-header__top">
             <div class="workbench-header__left">
                 <div class="workbench-header__brand">
-                    <span class="workbench-header__logo">🏥</span>
+                    <BaseIcon name="hospital" size="lg" class="workbench-header__logo" />
                     <span class="workbench-header__title">呼叫客户端</span>
                 </div>
             </div>
@@ -112,11 +113,11 @@ const closeServerDialog = () => {
         <div class="workbench-header__bottom">
             <div class="workbench-header__info">
                 <span v-if="orgName" class="info-tag info-tag--org">
-                    <span class="info-tag__icon">🏢</span>
+                    <BaseIcon name="building" size="sm" class="info-tag__icon" />
                     <span class="info-tag__text">{{ orgName }}</span>
                 </span>
                 <span v-if="deptName" class="info-tag info-tag--dept">
-                    <span class="info-tag__icon">🩺</span>
+                    <BaseIcon name="stethoscope" size="sm" class="info-tag__icon" />
                     <span class="info-tag__text">{{ deptName }}</span>
                 </span>
             </div>

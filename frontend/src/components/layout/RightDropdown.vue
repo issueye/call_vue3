@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useUserStore } from "@/stores";
 import { useRouter } from "vue-router";
+import BaseIcon from "@/components/common/BaseIcon.vue";
 import "./RightDropdown.css";
 
 const userStore = useUserStore();
@@ -76,7 +77,7 @@ onUnmounted(() => {
         <transition name="dropdown">
             <div v-if="showDropdown" class="user-dropdown__menu">
                 <div class="user-dropdown__item" @click="handleSetting">
-                    <span class="user-dropdown__icon">⚙️</span>
+                    <BaseIcon name="settings" size="sm" class="user-dropdown__icon" />
                     <span>系统设置</span>
                 </div>
                 <div class="user-dropdown__divider"></div>
@@ -84,7 +85,7 @@ onUnmounted(() => {
                     class="user-dropdown__item user-dropdown__item--danger"
                     @click="handleLogout"
                 >
-                    <span class="user-dropdown__icon">🚪</span>
+                    <BaseIcon name="logout" size="sm" class="user-dropdown__icon" />
                     <span>退出登录</span>
                 </div>
             </div>

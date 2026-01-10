@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import { usePatientStore } from "@/stores";
+import BaseIcon from "@/components/common/BaseIcon.vue";
 import Message from "@/utils/message";
 import "./TriageDialog.css";
 
@@ -188,7 +189,7 @@ const handleOverlayClick = (e) => {
                                 class="triage-dialog__options"
                             >
                                 <div class="option-title">
-                                    <span class="icon">🏥</span>
+                                    <BaseIcon name="hospital" size="sm" class="icon" />
                                     转到其他诊室
                                 </div>
                                 <div class="room-selector">

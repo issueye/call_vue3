@@ -1,5 +1,6 @@
 <script setup>
 import { computed, watch } from "vue";
+import BaseIcon from "@/components/common/BaseIcon.vue";
 import "./PatientDetailDialog.css";
 
 // 状态配置（与 PatientItem 保持一致）
@@ -129,7 +130,7 @@ if (typeof window !== "undefined") {
                                 <!-- 基本信息区 -->
                                 <div class="patient-detail-dialog__section">
                                     <div class="patient-detail-dialog__section-title">
-                                        <span class="icon">📋</span>
+                                        <BaseIcon name="clipboard" size="sm" class="icon" />
                                         <span>基本信息</span>
                                     </div>
                                     <div class="patient-detail-dialog__info-grid">
@@ -160,7 +161,7 @@ if (typeof window !== "undefined") {
                                 <!-- 就诊信息区 -->
                                 <div class="patient-detail-dialog__section">
                                     <div class="patient-detail-dialog__section-title">
-                                        <span class="icon">🏥</span>
+                                        <BaseIcon name="hospital" size="sm" class="icon" />
                                         <span>就诊信息</span>
                                     </div>
                                     <div class="patient-detail-dialog__info-grid">
