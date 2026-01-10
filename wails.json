@@ -1,7 +1,7 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
   "name": "call-client",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "医疗呼叫客户端桌面版",
   "frontend:dir": "./frontend",
   "frontend:install": "npm install",
@@ -18,7 +18,7 @@
   "info": {
     "companyName": "call-client",
     "productName": "呼叫客户端",
-    "productVersion": "1.0.0",
+    "productVersion": "1.0.2",
     "copyright": "Copyright © 2024 call-client",
     "comments": "医疗呼叫客户端桌面版"
   },

@@ -122,6 +122,11 @@ const handleSettingsClose = () => {
     showServerDialog.value = false;
 };
 
+// 刷新
+const handleReFresh = () => {
+    checkDeviceReg();
+};
+
 // 检查设备注册状态并获取机构信息
 const checkDeviceReg = async () => {
     if (!userStore.clientID) {
@@ -130,7 +135,7 @@ const checkDeviceReg = async () => {
     }
 
     try {
-        const { data } = await apiCheckDeviceReg(userStore.clientID);
+        const { code, data } = await apiCheckDeviceReg(userStore.clientID);
         // 保存机构信息
         userStore.setOrg(data.org);
         // 保存诊室信息（如果有）
@@ -307,6 +312,16 @@ onMounted(async () => {
                         </span>
                     </div>
                     <div class="login-page__binding-info">
+                        <button
+                            @click="handleReFresh"
+                            class="login-page__refresh-info"
+                        >
+                            <BaseIcon
+                                name="refresh"
+                                size="xs"
+                                class="binding-info__icon"
+                            />
+                        </button>
                         <span class="binding-info__item">
                             <BaseIcon
                                 name="building"
@@ -314,9 +329,9 @@ onMounted(async () => {
                                 class="binding-info__icon"
                             />
                             <span class="binding-info__label">机构:</span>
-                            <span class="binding-info__value">{{
-                                clientInfo.orgName
-                            }}</span>
+                            <span class="binding-info__value">
+                                {{ clientInfo.orgName }}
+                            </span>
                         </span>
                         <span class="binding-info__item">
                             <BaseIcon
@@ -325,9 +340,9 @@ onMounted(async () => {
                                 class="binding-info__icon"
                             />
                             <span class="binding-info__label">诊室:</span>
-                            <span class="binding-info__value">{{
-                                clientInfo.roomName
-                            }}</span>
+                            <span class="binding-info__value">
+                                {{ clientInfo.roomName }}
+                            </span>
                         </span>
                     </div>
                     <div class="login-page__version">

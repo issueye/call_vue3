@@ -85,12 +85,16 @@ const startupCheck = async () => {
 
   // 3. 检查设备注册状态（仅在未登录时检查）
   // 如果已经有机构信息，说明已登录或已注册，跳过检查
-  if (userStore.org?.org_id) {
-    console.log("已有机构信息，跳过设备检查");
-    return;
-  }
+  // if (userStore.org?.org_id) {
+  //   console.log("已有机构信息，跳过设备检查");
+  //   return;
+  // }
 
   try {
+    // 清空绑定信息
+    userStore.setOrg(null);
+    userStore.setRoom(null);
+
     console.log("userStore.clientID", userStore.clientID);
 
     const { data, code } = await apiCheckDeviceReg(userStore.clientID);

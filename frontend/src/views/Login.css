@@ -195,6 +195,7 @@
 
 /* ========== 绑定信息样式 ========== */
 .login-page__binding-info {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
@@ -233,6 +234,12 @@
     gap: var(--spacing-sm);
     font-size: var(--font-size-xs);
     color: var(--text-muted);
+}
+
+.login-page__refresh-info {
+    position: absolute;
+    right: var(--spacing-sm);
+    top: var(--spacing-sm);
 }
 
 .version__separator {
