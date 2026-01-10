@@ -62,12 +62,6 @@ const showList = () => {
     showDetail.value = false;
 };
 
-// 切换到患者详情
-const showPatientDetail = (patient) => {
-    patientStore.setCurrentPatient(patient);
-    showDetail.value = true;
-};
-
 // 处理呼叫
 const handleCall = async (patient) => {
     const result = await patientStore.callPatient(
@@ -208,7 +202,6 @@ const handleSkip = async () => {
             <PatientList
                 :active-id="patientStore.currentPatient?.id"
                 :loading="patientStore.loading"
-                @select="showPatientDetail"
                 @call="handleCall"
                 @detail="handleDetail"
             />

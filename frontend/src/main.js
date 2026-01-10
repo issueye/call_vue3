@@ -97,7 +97,7 @@ const startupCheck = async () => {
 
     console.log("userStore.clientID", userStore.clientID);
 
-    const { data, code } = await apiCheckDeviceReg(userStore.clientID);
+    const { data, code, error } = await apiCheckDeviceReg(userStore.clientID);
     console.log("设备检查 ->", data);
     // Message.info(`设备检查 -> ${JSON.stringify(res)}`);
     if (code === 200) {
@@ -108,7 +108,7 @@ const startupCheck = async () => {
     } else {
       // 保存错误信息到 Pinia store
       const errorMsg = "设备检查失败";
-      Message.info(res.error || errorMsg);
+      Message.info(error || errorMsg);
     }
   } catch (error) {
     console.error("检查设备注册状态失败:", error);

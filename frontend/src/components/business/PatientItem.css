@@ -7,7 +7,6 @@
     border-radius: var(--border-radius-lg);
     cursor: pointer;
     transition: all var(--transition-fast);
-    overflow: hidden;
 }
 
 /* 左侧状态条 */
@@ -19,6 +18,7 @@
     width: 4px;
     background: var(--status-color);
     transition: background var(--transition-normal);
+    margin: var(--spacing-sm) 0px;
 }
 
 /* 主要内容区域 */
@@ -42,17 +42,6 @@
 .patient-item--active {
     border-color: var(--color-primary);
     background: rgba(22, 97, 171, 0.02);
-}
-
-.patient-item--active::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: var(--color-primary);
-    box-shadow: 0 0 8px rgba(22, 97, 171, 0.4);
 }
 
 /* ========== 顶部信息行 ========== */
@@ -200,6 +189,7 @@
     bottom: 0;
     width: 4px;
     animation: pulse 1.5s ease-in-out infinite;
+    margin: var(--spacing-sm) 0px;
 }
 
 @keyframes pulse {
