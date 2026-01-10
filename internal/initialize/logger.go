@@ -8,7 +8,7 @@ import (
 func InitLogger(path string) {
 	cfg := new(logger.Config)
 	cfg.Level = -1
-	cfg.Path = filepath.Join(path, "logs/log.log")
+	cfg.Path = filepath.Join(path, "logs")
 	cfg.MaxSize = 50 // MB
 	cfg.MaxBackups = 5
 	cfg.MaxAge = 10 // days
