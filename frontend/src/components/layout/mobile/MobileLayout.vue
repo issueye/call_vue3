@@ -93,7 +93,7 @@ const handleNext = async () => {
         userStore.org?.org_id,
         userStore.room?.dept_id || userStore.org?.dept_id,
     );
-    if (result.success) {
+    if (result.code === 200) {
         Message.success("呼叫成功");
     } else if (result.message) {
         // 只有在非"请先处理当前在诊患者"的情况下才显示错误

@@ -49,6 +49,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const res = response.data;
+    console.log("res", res);
     const url = response.config.url || "";
 
     // 检查是否是不抛错的接口
@@ -60,17 +61,19 @@ service.interceptors.response.use(
     }
 
     // 成功响应
-    if (res.code === 200 || res.success) {
-      return res.data !== undefined ? res.data : res;
-    }
+    // if (res.code === 200) {
+    //   return res;
+    // }
 
-    // 对于不抛错的接口，返回完整响应
-    if (isNoThrowUrl) {
-      return res;
-    }
+    // // 对于不抛错的接口，返回完整响应
+    // if (isNoThrowUrl) {
+    //   return res;
+    // }
 
-    // 业务错误
-    return Promise.reject(new Error(res.message || res.error || "请求失败"));
+    // // 业务错误
+    // return Promise.reject(new Error(res.message || res.error || "请求失败"));
+
+    return res;
   },
   (error) => {
     // HTTP 错误处理
@@ -129,7 +132,7 @@ export const del = (url, config) => {
  * @param {string} url - 新的基础URL
  */
 export const updateBaseURL = (url) => {
-  if (url && typeof url === 'string') {
+  if (url && typeof url === "string") {
     service.defaults.baseURL = url;
   }
 };

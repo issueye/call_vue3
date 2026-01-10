@@ -1,155 +1,262 @@
 /* ========== PatientItem 样式 ========== */
 .patient-item {
+    position: relative;
+    display: flex;
     background: var(--bg-white);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
-    padding: var(--spacing-sm) var(--spacing-md);
     cursor: pointer;
-    transition: all var(--transition-normal);
-    position: relative;
-    height: var(--patient-card-height);
+    transition: all var(--transition-fast);
+    overflow: hidden;
+}
+
+/* 左侧状态条 */
+.patient-item__status-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--status-color);
+    transition: background var(--transition-normal);
+}
+
+/* 主要内容区域 */
+.patient-item__content {
+    flex: 1;
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md)
+        var(--spacing-lg);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-}
-
-.patient-item:hover {
-    box-shadow: var(--shadow-sm);
-    border-color: #a0c4e8;
-}
-
-.patient-item--active {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(22, 97, 171, 0.1);
-}
-
-.patient-item--passed {
-    opacity: 0.7;
-    background: var(--border-lighter);
-}
-
-.patient-item__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--spacing-sm);
-}
-
-.patient-item__header-right {
-    display: flex;
-    align-items: center;
     gap: var(--spacing-sm);
 }
 
+/* Hover效果 */
+.patient-item:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+/* Active状态 */
+.patient-item--active {
+    border-color: var(--color-primary);
+    background: rgba(22, 97, 171, 0.02);
+}
+
+.patient-item--active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--color-primary);
+    box-shadow: 0 0 8px rgba(22, 97, 171, 0.4);
+}
+
+/* ========== 顶部信息行 ========== */
+.patient-item__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+}
+
+.patient-item__main {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex: 1;
+    min-width: 0;
+}
+
 .patient-item__name {
+    margin: 0;
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     color: var(--text-primary);
-    flex: 1;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.patient-item__detail-btn {
+/* 操作按钮组 */
+.patient-item__actions {
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
-    padding: var(--spacing-xs) 10px;
-    background-color: #f0f9ff;
-    color: #409eff;
-    border: 1px solid #b3d8ff;
+    flex-shrink: 0;
+}
+
+/* 详情按钮 */
+.patient-item__detail-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
+    color: var(--text-muted);
     cursor: pointer;
     transition: all var(--transition-fast);
 }
 
 .patient-item__detail-btn:hover {
-    background-color: #409eff;
-    color: var(--color-white);
-    border-color: #409eff;
+    background: var(--border-lighter);
+    color: var(--color-primary);
 }
 
-.patient-item__detail-btn svg {
+/* 呼叫按钮 */
+.patient-item__call-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.patient-item__call-btn:hover:not(:disabled) {
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(22, 97, 171, 0.4);
+    transform: scale(1.05);
+}
+
+.patient-item__call-btn:active:not(:disabled) {
+    transform: scale(1);
+}
+
+.patient-item__call-btn:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.patient-item__call-btn--loading {
+    background: linear-gradient(135deg, var(--color-info) 0%, #7a7e85 100%);
+}
+
+.patient-item__call-btn__icon {
     flex-shrink: 0;
 }
 
-.patient-item__info {
+.patient-item__call-btn__spinner {
+    width: var(--font-sm);
+    height: var(--font-sm);
+    animation: spin 0.8s linear infinite;
+}
+
+/* ========== 底部信息行 ========== */
+.patient-item__bottom {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: var(--spacing-md);
+}
+
+.patient-item__queue {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.patient-item__queue-icon {
+    color: var(--color-primary);
+    opacity: 0.6;
+}
+
+.patient-item__queue-num {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
+}
+
+.patient-item__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
     font-size: var(--font-size-sm);
     color: var(--text-secondary);
 }
 
-.patient-item__call {
-    margin-top: var(--spacing-sm);
+.patient-item__meta .divider {
+    opacity: 0.4;
 }
 
-.patient-item__recall-btn {
-    width: 100%;
-    padding: var(--spacing-sm);
-    background: var(--color-success);
-    color: var(--color-white);
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-sm);
-    cursor: pointer;
-    transition: background var(--transition-normal);
-}
-
-.patient-item__recall-btn:hover {
-    background: #09903c;
-}
-
+/* ========== 脉冲动画 ========== */
 .patient-item__pulse {
     position: absolute;
-    top: 0;
     left: 0;
-    right: 0;
+    top: 0;
     bottom: 0;
-    border: 2px solid var(--status-calling);
-    border-radius: var(--border-radius-lg);
-    animation: pulseRing 2s ease-out infinite;
-    pointer-events: none;
+    width: 4px;
+    animation: pulse 1.5s ease-in-out infinite;
 }
 
-@keyframes pulseRing {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
+@keyframes pulse {
+    0%,
     100% {
-        transform: scale(1.05);
-        opacity: 0;
+        opacity: 1;
+        box-shadow: 0 0 0 0 var(--status-calling);
+    }
+    50% {
+        opacity: 0.6;
+        box-shadow: 0 0 8px 2px var(--status-calling);
     }
 }
 
-/* 状态徽章样式 */
+/* ========== 旋转动画 ========== */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========== 状态徽章样式 ========== */
 .patient-item :global(.status-calling) {
-    background: #e6f7ff;
+    background: rgba(82, 196, 26, 0.1);
     color: var(--status-calling);
+    border: 1px solid rgba(82, 196, 26, 0.2);
 }
 
 .patient-item :global(.status-priority) {
-    background: #fffbe6;
+    background: rgba(250, 173, 20, 0.1);
     color: var(--status-priority);
+    border: 1px solid rgba(250, 173, 20, 0.2);
 }
 
 .patient-item :global(.status-waiting) {
-    background: #f6ffed;
+    background: rgba(24, 144, 255, 0.1);
     color: var(--status-waiting);
+    border: 1px solid rgba(24, 144, 255, 0.2);
 }
 
 .patient-item :global(.status-revisit) {
-    background: #f9f0ff;
+    background: rgba(114, 46, 209, 0.1);
     color: var(--status-revisit);
+    border: 1px solid rgba(114, 46, 209, 0.2);
 }
 
 .patient-item :global(.status-passed) {
-    background: #fff2f0;
+    background: rgba(255, 77, 79, 0.1);
     color: var(--status-passed);
+    border: 1px solid rgba(255, 77, 79, 0.2);
 }
 
 .patient-item :global(.status-called) {
-    background: #f5f5f5;
+    background: rgba(140, 140, 140, 0.1);
     color: var(--status-called);
+    border: 1px solid rgba(140, 140, 140, 0.2);
 }

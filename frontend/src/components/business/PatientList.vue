@@ -21,6 +21,7 @@ const patientStore = usePatientStore();
 const userStore = useUserStore();
 const docId = computed(() => userStore.userInfo?.id);
 const isRefreshing = ref(false);
+const callingPatientId = ref(null);
 
 // Tab 配置
 const tabs = [
@@ -47,6 +48,11 @@ const currentList = computed(() => patientStore.patients);
 // 当前 Tab
 const currentTab = computed(() => patientStore.activeTab);
 
+// 检查患者是否正在呼叫
+const isPatientCalling = (patientId) => {
+    return callingPatientId.value === patientId;
+};
+
 // 切换 Tab
 const handleTabChange = (tabKey) => {
     patientStore.setActiveTab(tabKey, docId.value);
@@ -69,6 +75,21 @@ const handleRefresh = async () => {
         setTimeout(() => {
             isRefreshing.value = false;
         }, 500);
+    }
+};
+
+// 处理呼叫
+const handleCall = async (patient) => {
+    if (callingPatientId.value) return; // 防止重复呼叫
+
+    callingPatientId.value = patient.id;
+    try {
+        emit('call', patient);
+    } finally {
+        // 呼叫完成后重置状态（由父组件控制或设置超时）
+        setTimeout(() => {
+            callingPatientId.value = null;
+        }, 2000);
     }
 };
 </script>
@@ -143,8 +164,9 @@ const handleRefresh = async () => {
                     :key="patient.id"
                     :patient="patient"
                     :active="patient.id === activeId"
+                    :calling="isPatientCalling(patient.id)"
                     @click="emit('select', patient)"
-                    @call="emit('call', patient)"
+                    @call="handleCall"
                     @detail="emit('detail', patient)"
                 />
             </transition-group>

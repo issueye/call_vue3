@@ -93,20 +93,18 @@ const startupCheck = async () => {
   try {
     console.log("userStore.clientID", userStore.clientID);
 
-    const res = await apiCheckDeviceReg(userStore.clientID);
+    const { data, code } = await apiCheckDeviceReg(userStore.clientID);
+    console.log("设备检查 ->", data);
     // Message.info(`设备检查 -> ${JSON.stringify(res)}`);
-    if (res) {
+    if (code === 200) {
       // 保存设备信息到 Pinia store
-      userStore.setDeviceInfo(res);
+      userStore.setDeviceInfo(data);
       userStore.setDeviceRegistered(true);
       userStore.clearDeviceError();
     } else {
       // 保存错误信息到 Pinia store
       const errorMsg = "设备检查失败";
-      userStore.setDeviceError(errorMsg);
-      userStore.setDeviceRegistered(false);
-      // 不再弹 alert，由登录页面统一显示
-      Message.info(errorMsg);
+      Message.info(res.error || errorMsg);
     }
   } catch (error) {
     console.error("检查设备注册状态失败:", error);

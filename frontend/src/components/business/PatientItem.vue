@@ -1,17 +1,11 @@
 <script setup>
 import { computed } from "vue";
 import BaseBadge from "@/components/common/BaseBadge.vue";
+import BaseIcon from "@/components/common/BaseIcon.vue";
 import "./PatientItem.css";
+import consts from "@/consts";
 
-// 状态配置
-const statusConfig = {
-    0: { label: "接诊中", class: "status-calling" },
-    1: { label: "优先", class: "status-priority" },
-    2: { label: "候诊中", class: "status-waiting" },
-    3: { label: "复诊", class: "status-revisit" },
-    4: { label: "过号", class: "status-passed" },
-    99: { label: "结诊", class: "status-called" },
-};
+const { PATIENT_STATE } = consts;
 
 const props = defineProps({
     patient: {
@@ -22,15 +16,37 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    calling: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(["click", "call", "detail"]);
 
-const currentStatus = computed(
-    () => statusConfig[props.patient.state] || statusConfig[2],
-);
+const currentStatus = computed(() => {
+    for (const key in PATIENT_STATE) {
+        if (PATIENT_STATE[key].state === props.patient.state) {
+            return PATIENT_STATE[key];
+        }
+    }
+    return PATIENT_STATE[2];
+});
 
 const genderLabel = computed(() => (props.patient.gender === 1 ? "男" : "女"));
+
+// 计算状态颜色
+const statusColor = computed(() => {
+    const colorMap = {
+        [PATIENT_STATE.CALLING.state]: "var(--status-calling)",
+        [PATIENT_STATE.PRIORITY.state]: "var(--status-priority)",
+        [PATIENT_STATE.WAITING.state]: "var(--status-waiting)",
+        [PATIENT_STATE.REVISIT.state]: "var(--status-revisit)",
+        [PATIENT_STATE.PASSED.state]: "var(--status-passed)",
+        [PATIENT_STATE.CALLED.state]: "var(--status-called)",
+    };
+    return colorMap[props.patient.state] || "var(--status-waiting)";
+});
 </script>
 
 <template>
@@ -38,61 +54,75 @@ const genderLabel = computed(() => (props.patient.gender === 1 ? "男" : "女"))
         class="patient-item"
         :class="{
             'patient-item--active': active,
-            'patient-item--passed': patient.status === 4,
         }"
+        :style="{ '--status-color': statusColor }"
         @click="emit('click', patient)"
     >
-        <div class="patient-item__header">
-            <span class="patient-item__name">{{ patient.name }}</span>
-            <div class="patient-item__header-right">
-                <BaseBadge
-                    :text="currentStatus.label"
-                    :class="currentStatus.class"
-                />
-                <button
-                    class="patient-item__detail-btn"
-                    @click.stop="emit('detail', patient)"
-                    title="查看详情"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+        <!-- 左侧状态条 -->
+        <div class="patient-item__status-bar" />
+
+        <!-- 主要内容区域 -->
+        <div class="patient-item__content">
+            <!-- 顶部信息行 -->
+            <div class="patient-item__top">
+                <div class="patient-item__main">
+                    <h3 class="patient-item__name">{{ patient.name }}</h3>
+                    <BaseBadge
+                        :text="currentStatus.label"
+                        :class="currentStatus.class"
+                        size="sm"
+                    />
+                </div>
+                <div class="patient-item__actions">
+                    <!-- 过号患者呼叫按钮 -->
+                    <button
+                        v-if="patient.state === PATIENT_STATE.PASSED.state"
+                        class="patient-item__detail-btn"
+                        :disabled="calling"
+                        @click.stop="emit('call', patient)"
+                        title="呼叫"
                     >
-                        <path
-                            d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                        <BaseIcon
+                            name="call"
+                            size="xs"
+                            class="patient-item__call-btn__icon"
                         />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                    详情
-                </button>
+                    </button>
+                    <!-- 详情按钮 -->
+                    <button
+                        class="patient-item__detail-btn"
+                        @click.stop="emit('detail', patient)"
+                        title="查看详情"
+                    >
+                        <BaseIcon name="clipboard" size="xs" />
+                    </button>
+                </div>
+            </div>
+
+            <!-- 底部信息行 -->
+            <div class="patient-item__bottom">
+                <div class="patient-item__queue">
+                    <BaseIcon
+                        name="clipboard"
+                        size="xs"
+                        class="patient-item__queue-icon"
+                    />
+                    <span class="patient-item__queue-num">{{
+                        patient.line_num
+                    }}</span>
+                </div>
+                <div class="patient-item__meta">
+                    <span>{{ genderLabel }}</span>
+                    <span class="divider">|</span>
+                    <span>{{ patient.age }}岁</span>
+                </div>
             </div>
         </div>
 
-        <div class="patient-item__info">
-            <span class="patient-item__meta">
-                {{ genderLabel }} | {{ patient.age }}
-            </span>
-            <span class="patient-item__queue">
-                排队号: {{ patient.line_num }}
-            </span>
-        </div>
-
-        <div v-if="patient.status === 4" class="patient-item__call">
-            <button
-                class="patient-item__recall-btn"
-                @click.stop="emit('call', patient)"
-            >
-                重新呼叫
-            </button>
-        </div>
-
-        <div v-if="patient.status === 0" class="patient-item__pulse" />
+        <!-- 接诊中状态脉冲效果 -->
+        <div
+            v-if="patient.state === PATIENT_STATE.CALLING.state"
+            class="patient-item__pulse"
+        />
     </div>
 </template>

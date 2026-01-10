@@ -30,6 +30,8 @@ const savedServerUrl = ref("");
 const clientInfo = computed(() => ({
     clientId: userStore.clientID,
     serverUrl: savedServerUrl.value,
+    orgName: userStore.org?.org_name || "未绑定",
+    roomName: userStore.room?.name || "未绑定",
 }));
 
 // 设备错误信息从 Pinia store 获取
@@ -103,13 +105,13 @@ const connectMqtt = async () => {
         return;
     }
 
-    const mqInfo = await apiGetMqttInfo();
-    console.log(`MQTT 信息:`, mqInfo);
+    const { code, data, error, message } = await apiGetMqttInfo();
+    console.log(`MQTT 信息:`, data);
     // 连接 MQTT，传入用户信息以启动心跳
     await linkMqtt(
-        mqInfo.use_tls,
-        mqInfo.host,
-        mqInfo.ws_port,
+        data.use_tls,
+        data.host,
+        data.ws_port,
         userStore.org,
         userStore.userInfo,
     );
@@ -128,12 +130,12 @@ const checkDeviceReg = async () => {
     }
 
     try {
-        const { org, rooms } = await apiCheckDeviceReg(userStore.clientID);
+        const { data } = await apiCheckDeviceReg(userStore.clientID);
         // 保存机构信息
-        userStore.setOrg(org);
+        userStore.setOrg(data.org);
         // 保存诊室信息（如果有）
-        if (rooms && rooms.length > 0) {
-            userStore.setRoom(rooms[0]);
+        if (data.rooms && data.rooms.length > 0) {
+            userStore.setRoom(data.rooms[0]);
         }
         return true;
     } catch (error) {
@@ -161,11 +163,16 @@ const handleLogin = async () => {
             client_type: CONSTANTS.CALLER,
         };
 
-        const res = await apiLogin(params);
-        console.log("登录返回数据:", res);
+        // 登录请求
+        const { code, data, error, message } = await apiLogin(params);
+        console.log("登录返回数据:", data);
+        if (code !== 200) {
+            Message.error(error || message || "登录失败");
+            return;
+        }
 
         // 保存登录数据（包含 token、org、rooms）
-        userStore.setLoginData(res);
+        userStore.setLoginData(data);
 
         // 检查设备注册状态并获取机构信息
         const isRegistered = await checkDeviceReg();
@@ -207,7 +214,11 @@ onMounted(async () => {
 
         <div class="login-page__container">
             <div class="login-page__logo">
-                <BaseIcon name="hospital" size="xl" class="login-page__logo-icon" />
+                <BaseIcon
+                    name="hospital"
+                    size="xl"
+                    class="login-page__logo-icon"
+                />
                 <h1 class="login-page__logo-text">呼叫客户端</h1>
             </div>
 
@@ -218,7 +229,11 @@ onMounted(async () => {
                 <form class="login-page__form" @submit.prevent="handleLogin">
                     <div class="login-page__input-group">
                         <div class="login-page__input-wrapper">
-                            <BaseIcon name="user" size="sm" class="login-page__input-icon" />
+                            <BaseIcon
+                                name="user"
+                                size="sm"
+                                class="login-page__input-icon"
+                            />
                             <input
                                 v-model="form.account"
                                 type="text"
@@ -231,7 +246,11 @@ onMounted(async () => {
 
                     <div class="login-page__input-group">
                         <div class="login-page__input-wrapper">
-                            <BaseIcon name="lock" size="sm" class="login-page__input-icon" />
+                            <BaseIcon
+                                name="lock"
+                                size="sm"
+                                class="login-page__input-icon"
+                            />
                             <input
                                 v-model="form.password"
                                 type="password"
@@ -284,6 +303,30 @@ onMounted(async () => {
                             <span class="client-info__label">服务器:</span>
                             <span class="client-info__value">{{
                                 savedServerUrl
+                            }}</span>
+                        </span>
+                    </div>
+                    <div class="login-page__binding-info">
+                        <span class="binding-info__item">
+                            <BaseIcon
+                                name="building"
+                                size="xs"
+                                class="binding-info__icon"
+                            />
+                            <span class="binding-info__label">机构:</span>
+                            <span class="binding-info__value">{{
+                                clientInfo.orgName
+                            }}</span>
+                        </span>
+                        <span class="binding-info__item">
+                            <BaseIcon
+                                name="stethoscope"
+                                size="xs"
+                                class="binding-info__icon"
+                            />
+                            <span class="binding-info__label">诊室:</span>
+                            <span class="binding-info__value">{{
+                                clientInfo.roomName
                             }}</span>
                         </span>
                     </div>

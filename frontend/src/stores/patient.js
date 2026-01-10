@@ -68,14 +68,16 @@ export const usePatientStore = defineStore(
             pat_type: patType, // 患者类型
           },
         };
-        const data = await apiPatLineList(params);
-        patients.value = data?.list || [];
-        pageConfig.value.total = data?.total || 0;
+        const { code, data } = await apiPatLineList(params);
+        if (code === 200) {
+          patients.value = data?.list || [];
+          pageConfig.value.total = data?.total || 0;
 
-        docStatus.value.end_count = data?.meta_data.end_count || 0;
-        docStatus.value.pass_count = data?.meta_data.pass_count || 0;
-        docStatus.value.wait_count = data?.meta_data.wait_count || 0;
-        docStatus.value.call_count = data?.meta_data.call_count || 0;
+          docStatus.value.end_count = data?.meta_data.end_count || 0;
+          docStatus.value.pass_count = data?.meta_data.pass_count || 0;
+          docStatus.value.wait_count = data?.meta_data.wait_count || 0;
+          docStatus.value.call_count = data?.meta_data.call_count || 0;
+        }
       } catch (error) {
         console.error("获取患者列表失败:", error);
         patients.value = [];
@@ -98,16 +100,16 @@ export const usePatientStore = defineStore(
           room_id: null,
           doc_id: docId,
         };
-        const callRes = await apiPatCall(params);
-        console.log("callRes", callRes);
+        const { code, data } = await apiPatCall(params);
+        console.log("呼叫患者", data);
 
         // 重新获取患者列表
-        await fetchPatients(docId);
+        // await fetchPatients(docId);
 
         // 切换回候诊 tab
         setActiveTab("waiting", docId);
 
-        currentCall.value = callRes;
+        currentCall.value = data;
         return { success: true };
       } catch (error) {
         console.error("呼叫患者失败:", error);
@@ -133,8 +135,8 @@ export const usePatientStore = defineStore(
           doc_id: docId,
         };
 
-        const callRes = await apiPatCall(params);
-        console.log("recallRes", callRes);
+        const { code, data } = await apiPatCall(params);
+        console.log("呼叫患者", data);
 
         // 更新呼叫次数
         const callCountKey =
@@ -146,7 +148,7 @@ export const usePatientStore = defineStore(
         // 切换回候诊 tab
         setActiveTab("waiting", docId);
 
-        return { success: true, data: callRes };
+        return { success: true, data: data };
       } catch (error) {
         console.error("重呼患者失败:", error);
         return { success: false, message: error.message || "重呼失败" };
@@ -163,7 +165,7 @@ export const usePatientStore = defineStore(
         await apiPatPass(params);
 
         // 查询列表
-        await fetchPatients(docId);
+        // await fetchPatients(docId);
 
         // 更新当前就诊
         visitPatient.value = null;
@@ -230,11 +232,12 @@ export const usePatientStore = defineStore(
     const getDeptRoomList = async (docId) => {
       try {
         const appointmentId = visitPatient.value?.appointment_id || null;
-        const data = await apiGetRoomList({
+        const params = {
           doc_id: docId,
           queue_type: 3, // 医生队列
           appointment_id: appointmentId,
-        });
+        };
+        const { data } = await apiGetRoomList(params);
         deptRoomList.value = data?.list || data || [];
         return deptRoomList.value;
       } catch (error) {
@@ -273,9 +276,10 @@ export const usePatientStore = defineStore(
         const params = {
           doc_id: docId,
         };
-        const data = await apiDoctorVisitedPatient(params);
-        visitPatient.value = data || null;
-        return visitPatient.value;
+        const { code, data } = await apiDoctorVisitedPatient(params);
+        if (code === 200) {
+          visitPatient.value = data || null;
+        }
       } catch (error) {
         console.error("获取在诊患者失败:", error);
         return null;
@@ -288,14 +292,10 @@ export const usePatientStore = defineStore(
       if (!visitPatient.value || isFirstCall.value) {
         if (patients.value.length > 0) {
           const nextPatient = patients.value[0];
-          const result = await callPatient(docId, nextPatient);
-
-          if (result.success) {
-            visitPatient.value = nextPatient;
-            isFirstCall.value = false; // 更新首次呼叫标记
-          }
-
-          return result;
+          const res = await callPatient(docId, nextPatient);
+          visitPatient.value = nextPatient;
+          isFirstCall.value = false; // 更新首次呼叫标记
+          return res;
         } else {
           return { success: false, message: "暂无候诊患者" };
         }

@@ -112,9 +112,6 @@ export const useUserStore = defineStore(
       // 断开 MQTT 连接
       disconnect();
       clearUserInfo();
-      // 清理机构信息
-      setOrg(null);
-      setRoom(null);
       // 清理设备注册状态
       setDeviceRegistered(false);
       clearDeviceError();
